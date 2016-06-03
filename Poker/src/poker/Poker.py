@@ -72,7 +72,7 @@ class Pair(WinPattern):
         return self.ranks.count(card.rank) == n
     
     def criterion(self):
-        return any([self.has_n(card, 2) for card in self.cards])
+        return len(set([card.rank for card in self.cards if self.has_n(card, 2)])) == 1 
     
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
@@ -93,7 +93,40 @@ class TestPair(unittest.TestCase):
     def test_know_rank_of_pair(self):
         hand = Hand(["7S", "2H", "3D", "7C", "KD"])
         self.assertEqual(["7"], Pair(hand.cards).values())
+
+
+class TwoPair(WinPattern):
+    """A hand has two cards of the same rank."""
+    def __init__(self, cards):
+        self.cards = cards
+        self.ranks = [card.rank for card in self.cards]
+    
+    def has_n(self, card, n):
+        return self.ranks.count(card.rank) == n
+    
+    def criterion(self):
+        return len(set([card.rank for card in self.cards if self.has_n(card, 2)])) == 2 
+    
+    def values(self):
+        return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
+    
+    def score(self):
+        return 2
+
+
+class TestTwoPair(unittest.TestCase):    
+    def test_is_two_pair(self):
+        two_pair = Hand(["5H", "5S", "8H", "8D"])
+        self.assertTrue(TwoPair(two_pair.cards).criterion())
+                
+    def test_lone_pair_is_not_two_pair(self):
+        pair = Hand(["4S", "4S", "7H", "8D"])
+        self.assertFalse(TwoPair(pair.cards).criterion())
         
+    def test_know_ranks_of_two_pair(self):
+        hand = Hand(["7S", "3H", "3D", "7C", "KD"])
+        self.assertEqual(["3", "7"], TwoPair(hand.cards).values())
+
         
 class ThreeOfAKind(WinPattern):
     """A hand has three cards of the same rank."""
@@ -169,8 +202,8 @@ class Hand:
     def score(self):
         if ThreeOfAKind(self.cards).criterion():
             return ThreeOfAKind(self.cards).score()
-        if self.two_pair():
-            return 2
+        if TwoPair(self.cards).criterion():
+            return TwoPair(self.cards).score()
         if Pair(self.cards).criterion():
             return Pair(self.cards).score()
         return 0
