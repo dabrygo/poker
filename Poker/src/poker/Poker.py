@@ -192,20 +192,39 @@ class TestThreeOfAKind(unittest.TestCase):
     def test_know_rank_of_three_of_a_kind(self):
         hand = Hand(["7S", "7H", "3D", "7C", "KD"])
         self.assertEqual(["7"], ThreeOfAKind(hand).values())
+        
+               
+class Straight(WinPattern):
+    def __init__(self, hand):
+        super().__init__(hand)
+    
+    def criterion(self):
+        self.cards = sorted(self.cards, reverse=False)
+        start_index = Card.ranks.index(self.cards[0].rank)
+        for i in range(5):
+            if self.cards[i].rank != Card.ranks[start_index + i]:
+                return False
+        return True
+
+
+class TestStraight(unittest.TestCase):
+    def test_small_straight(self):
+        small_straight = Hand(["2S", "3D", "4C", "5H", "6C"])
+        self.assertTrue(Straight(small_straight).criterion())
+    
+    def test_is_not_straight(self):
+        straight = Hand(["8S", "3D", "4C", "5H", "6C"])
+        self.assertFalse(Straight(straight).criterion())
+        
+    def test_big_straight(self):
+        big_straight = Hand(["AS", "KD", "QH", "JS", "TC"])
+        self.assertTrue(Straight(big_straight).criterion())
 
 
 class Hand:
     """An unordered collection of cards."""
     def __init__(self, card_strings):
         self.cards = [Card(card) for card in card_strings]
-    
-    def straight(self):
-        self.sort_hand(highest_first=False)
-        start_index = Card.ranks.index(self.cards[0].rank)
-        for i in range(5):
-            if self.cards[i].rank != Card.ranks[start_index + i]:
-                return False
-        return True
     
     def flush(self):
         return all([card.suit == self.cards[0].suit for card in self.cards])
@@ -217,6 +236,8 @@ class Hand:
         self.cards = sorted(self.cards, reverse=highest_first)
         
     def win_pattern(self):
+        if Straight(self).criterion():
+            return Straight(self)
         if ThreeOfAKind(self).criterion():
             return ThreeOfAKind(self)
         if TwoPair(self).criterion():
@@ -237,14 +258,6 @@ class HandTest(unittest.TestCase):
         self.hand.sort_hand()
         self.assertEqual("K", self.hand.cards[0].rank)
         
-    def test_small_straight(self):
-        small_straight = Hand(["2S", "3D", "4H", "5S", "6C"])
-        self.assertTrue(small_straight.straight())
-        
-    def test_big_straight(self):
-        big_straight = Hand(["AS", "KD", "QH", "JS", "TC"])
-        self.assertTrue(big_straight.straight())
-        
     def test_all_same_suit(self):
         flush = Hand(["AS", "2S", "5S", "7S", "9S"])
         self.assertTrue(flush.flush())
@@ -258,6 +271,7 @@ class HandTest(unittest.TestCase):
         self.assertTrue(full_house.full_house())
         
 
+# TODO: More "tied" tests
 class Game:
     """A set of two hands, one of which is a winner."""
     def __init__(self, hand_1, hand_2):
