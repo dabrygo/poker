@@ -235,6 +235,7 @@ class Flush(WinPattern):
     @staticmethod
     def score():
         return 5    
+    
 
 class TestFlush(unittest.TestCase):
     def test_is_a_flush(self):
@@ -262,7 +263,74 @@ class TestFullHouse(unittest.TestCase):
     def test_is_full_house(self):
         full_house = Hand(["4S", "4D", "7H", "7C", "7D"])
         self.assertTrue(FullHouse(full_house).criterion())
+        
+    def test_two_pair_is_not_full_house(self):
+        two_pair = Hand(["4S", "4D", "7H", "7C", "8D"])
+        self.assertFalse(FullHouse(two_pair).criterion())
+        
+    def test_suits_do_not_make_a_full_house(self):
+        suit_house = Hand(["2S", "4S", "7H", "6H", "8H"])
+        self.assertFalse(FullHouse(suit_house).criterion())
 
+
+class FourOfAKind(WinPattern):
+    """A hand has three cards of the same rank."""
+    def __init__(self, hand):
+        super().__init__(hand)
+    
+    def criterion(self):
+        return any([self.has_n(card, 4) for card in self.cards])
+    
+    def values(self):
+        return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 4)])))
+    
+    @staticmethod
+    def score():
+        return 7
+
+
+class TestFourOfAKind(unittest.TestCase):    
+    def test_is_four_of_a_kind(self):
+        pair = Hand(["5H", "5S", "5D", "5C"])
+        self.assertTrue(FourOfAKind(pair).criterion())
+                
+    def test_pair_is_not_four_of_a_kind(self):
+        pair = Hand(["4S", "5S", "5D"])
+        self.assertFalse(FourOfAKind(pair).criterion())
+         
+    def test_three_of_a_kind_is_not_four_of_a_kind(self):
+        hand = Hand(["7S", "7H", "3D", "2C", "7D"])
+        self.assertFalse(FourOfAKind(hand).criterion())
+         
+    def test_know_rank_of_four_of_a_kind(self):
+        hand = Hand(["7S", "7H", "3D", "7C", "7D"])
+        self.assertEqual(["7"], FourOfAKind(hand).values())
+ 
+
+class StraightFlush(WinPattern):
+    def __init__(self, hand):
+        super().__init__(hand)
+        
+    def criterion(self):
+        return Straight(self).criterion() and Flush(self).criterion()
+    
+    @staticmethod
+    def score():
+        return 8
+    
+
+class TestStraightFlush(unittest.TestCase):
+    def test_is_straight_flush(self):
+        hand = Hand(["2S", "3S", "4S", "5S", "6S"])
+        self.assertTrue(StraightFlush(hand).criterion())
+        
+    def test_straight_is_not_always_straight_flush(self):
+        hand = Hand(["2S", "3D", "4S", "5S", "6S"])
+        self.assertFalse(StraightFlush(hand).criterion())
+        
+    def test_flush_is_not_always_straight_flush(self):
+        hand = Hand(["2S", "3S", "4S", "5S", "7S"])
+        self.assertFalse(StraightFlush(hand).criterion())
 
 class Hand:
     """An unordered collection of cards."""
@@ -274,6 +342,10 @@ class Hand:
       
     # TODO Test each of these to ensure branches reached  
     def win_pattern(self):
+        if StraightFlush(self).criterion():
+            return StraightFlush(self)
+        if FourOfAKind(self).criterion():
+            return FourOfAKind(self)
         if FullHouse(self).criterion():
             return FullHouse(self)
         if Flush(self).criterion():
