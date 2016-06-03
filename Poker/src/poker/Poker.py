@@ -65,8 +65,9 @@ class WinPattern:
         """The ranking of this pattern to others."""
         pass
     
+    # TODO: Make property?
     def values(self):
-        """The rank of the cards involved, highest first."""
+        """A list ranks of the cards involved, highest first."""
         pass
     
     def has_n(self, card, n):
@@ -82,7 +83,7 @@ class HighCard(WinPattern):
     
     def values(self):
         sort_by_rank = sorted(self.cards, reverse=True)
-        return sort_by_rank[0]
+        return [sort_by_rank[0].rank]
     
     @staticmethod
     def score():
@@ -92,11 +93,11 @@ class HighCard(WinPattern):
 class TestHighCard(unittest.TestCase):
     def test_low_high_card(self):
         bad_hand = Hand(["7D", "2H", "3D", "5C", "4S"])
-        self.assertEqual(Card("7D"), HighCard(bad_hand).values())
+        self.assertEqual("7", HighCard(bad_hand).values()[0])
     
     def test_ace_high(self):
         good_hand = Hand(["AD", "KD", "QD", "JD", "TD"])
-        self.assertEqual(Card("AD"), HighCard(good_hand).values())
+        self.assertEqual("A", HighCard(good_hand).values()[0])
 
     
 class Pair(WinPattern):
@@ -268,14 +269,18 @@ class Game:
     def player_one_has_a_better_win_pattern(self):
         return self.hand_1.win_pattern().score() > self.hand_2.win_pattern().score()
 
-    def both_players_have_same_win_pattern(self):
+    def break_tie(self):
         return self.hand_1.win_pattern().score() == self.hand_2.win_pattern().score()
 
     def player_one_wins(self):
         if self.player_one_has_a_better_win_pattern():
             return True
-        elif self.both_players_have_same_win_pattern():
-            return self.hand_1.win_pattern().values() > self.hand_2.win_pattern().values()
+        elif self.break_tie():
+            for i, rank in enumerate(self.hand_1.win_pattern().values()):
+                other_guy_rank = self.hand_2.win_pattern().values()[i]
+                if Card.ranks.index(rank) < Card.ranks.index(other_guy_rank):
+                    return False
+            return True
         return False
 
     def player_two_wins(self):
@@ -316,13 +321,13 @@ class GameTest(unittest.TestCase):
         
         self.assertTrue(game.player_one_wins())
     
-#     def test_two_pair_jacks_beats_two_pair_tens(self):
-#         hand_1 = Hand(["TH", "8H", "5C", "QS", "TC"])
-#         hand_2 = Hand(["9H", "4D", "JC", "KS", "JS"])
-#         
-#         game = Game(hand_1, hand_2)
-#         
-#         self.assertTrue(game.player_two_wins())
+    def test_pair_jacks_beats_pair_tens(self):
+        hand_1 = Hand(["TH", "8H", "5C", "QS", "TC"])
+        hand_2 = Hand(["9H", "4D", "JC", "KS", "JS"])
+         
+        game = Game(hand_1, hand_2)
+         
+        self.assertTrue(game.player_two_wins())
 
     def test_three_of_a_kind_beats_two_pair(self):
         hand_1 = Hand(["2S", "2D", "2H", "3S", "4D"])
