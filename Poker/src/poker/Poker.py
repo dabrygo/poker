@@ -61,7 +61,8 @@ class WinPattern:
     def values(self):
         """The rank of the cards involved, highest first.d"""
         pass
-    
+
+
 class Pair(WinPattern):
     """A hand has two cards of the same rank."""
     def __init__(self, cards):
@@ -77,7 +78,8 @@ class Pair(WinPattern):
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
     
-    def score(self):
+    @staticmethod
+    def score():
         return 1
 
 
@@ -110,7 +112,8 @@ class TwoPair(WinPattern):
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
     
-    def score(self):
+    @staticmethod
+    def score():
         return 2
 
 
@@ -143,7 +146,8 @@ class ThreeOfAKind(WinPattern):
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 3)])))
     
-    def score(self):
+    @staticmethod
+    def score():
         return 3
 
 
@@ -152,9 +156,13 @@ class TestThreeOfAKind(unittest.TestCase):
         pair = Hand(["5H", "5S", "5D"])
         self.assertTrue(ThreeOfAKind(pair.cards).criterion())
                 
-    def test_is_not_three_of_a_kind(self):
+    def test_pair_is_not_three_of_a_kind(self):
         pair = Hand(["4S", "5S", "5D"])
         self.assertFalse(ThreeOfAKind(pair.cards).criterion())
+        
+    def test_four_of_a_kind_is_not_three_of_a_kind(self):
+        hand = Hand(["7S", "7H", "3D", "7C", "7D"])
+        self.assertFalse(ThreeOfAKind(hand.cards).criterion())
         
     def test_know_rank_of_three_of_a_kind(self):
         hand = Hand(["7S", "7H", "3D", "7C", "KD"])
@@ -167,17 +175,11 @@ class Hand:
         self.cards = [Card(card) for card in card_strings]
         self.ranks = [card.rank for card in self.cards]
     
-    def has_n(self, card, n):
-        return self.ranks.count(card.rank) == n
-    
-    def find_pair(self):
-        return set([card.rank for card in self.cards if self.has_n(card, 2)]) 
-    
     def pair(self):
         return Pair(self.cards).criterion()
     
     def two_pair(self):
-        return len(Pair(self.cards).values()) == 2
+        return TwoPair(self.cards).criterion()
     
     def three_of_a_kind(self):
         return ThreeOfAKind(self.cards).criterion()
@@ -201,11 +203,11 @@ class Hand:
         
     def score(self):
         if ThreeOfAKind(self.cards).criterion():
-            return ThreeOfAKind(self.cards).score()
+            return ThreeOfAKind.score()
         if TwoPair(self.cards).criterion():
-            return TwoPair(self.cards).score()
+            return TwoPair.score()
         if Pair(self.cards).criterion():
-            return Pair(self.cards).score()
+            return Pair.score()
         return 0
     
     def __str__(self):
@@ -232,20 +234,6 @@ class HandTest(unittest.TestCase):
         fives = Hand(["5H", "5C"])
         
         self.assertLess(Pair(fives.cards).values(), Pair(eights.cards).values())
-        
-    def test_can_see_two_pair(self):
-        one_pair = Hand(["2S", "2H", "3S", "4S"])
-        two_pair = Hand(["2S", "2H", "4S", "4H"])
-        self.assertTrue(two_pair.two_pair())
-        self.assertFalse(one_pair.two_pair())
-        
-    def test_three_of_a_kind_has_exactly_three(self):
-        two_of_a_kind = Hand(["2S", "2H", "3D", "4S", "5D"])
-        three_of_a_kind = Hand(["2S", "2H", "2D", "7S", "JD"])
-        four_of_a_kind = Hand(["2S", "2H", "2D", "2S", "JD"])
-        self.assertFalse(two_of_a_kind.three_of_a_kind())
-        self.assertTrue(three_of_a_kind.three_of_a_kind())
-        self.assertFalse(four_of_a_kind.three_of_a_kind())
         
     def test_small_straight(self):
         small_straight = Hand(["2S", "3D", "4H", "5S", "6C"])
@@ -287,10 +275,10 @@ class Game:
         return self.hand_1.score() > self.hand_2.score()
 
     def both_players_have_pairs(self):
-        return self.hand_1.score() == 1 == self.hand_2.score()
+        return self.hand_1.score() == Pair.score() == self.hand_2.score()
 
     def both_players_have_two_pair(self):
-        return self.hand_1.score() == 2 == self.hand_2.score()
+        return self.hand_1.score() == TwoPair.score() == self.hand_2.score()
 
     def player_one_wins(self):
         if self.player_one_has_a_better_hand():
