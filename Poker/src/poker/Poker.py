@@ -63,6 +63,9 @@ class Hand:
     def pair(self):
         return str(self.find_pair()) if len(self.find_pair()) == 1 else []
     
+    def pair_without_values(self):
+        return any([self.has_n(card, 2) for card in self.cards])
+    
     def two_pair(self):
         return len(self.find_pair()) == 2
     
@@ -76,6 +79,12 @@ class Hand:
             if self.cards[i].rank != Card.ranks[start_index + i]:
                 return False
         return True
+    
+    def flush(self):
+        return all([card.suit == self.cards[0].suit for card in self.cards])
+    
+    def full_house(self):
+        return self.pair_without_values() and self.three_of_a_kind()
     
     def sort_hand(self, highest_first=True):
         self.cards = sorted(self.cards, reverse=highest_first)
@@ -144,6 +153,25 @@ class HandTest(unittest.TestCase):
         big_straight = Hand(["AS", "KD", "QH", "JS", "TC"])
         self.assertTrue(big_straight.straight())
         
+    def test_all_same_suit(self):
+        flush = Hand(["AS", "2S", "5S", "7S", "9S"])
+        self.assertTrue(flush.flush())
+    
+    def test_all_not_same_suit(self):
+        not_flush = Hand(["AS", "2S", "5H", "7S", "9S"])
+        self.assertFalse(not_flush.flush())
+    
+    def test_is_full_house(self):
+        full_house = Hand(["4S", "4D", "7H", "7C", "7D"])
+        self.assertTrue(full_house.full_house())
+        
+#     def test_is_not_full_house(self):
+#         pair = Hand(["4S", "4D", "7H", "8C", "9D"])
+#         self.assertFalse(pair.full_house())
+#         three_of_a_kind = Hand(["4S", "4D", "4H", "8C", "9D"])
+#         self.assertFalse(three_of_a_kind.full_house())
+#         two_pair = Hand(["4S", "4D", "7H", "7C", "8D"])
+#         self.assertFalse(two_pair)
 
 class Game:
     """A set of two hands, one of which is a winner."""
@@ -217,14 +245,14 @@ class GameTest(unittest.TestCase):
         self.assertTrue(game.player_one_wins)
                       
         
-if __name__ == "__main__":
-    with open("../../TestResources/hands.txt", 'r') as f:
-        for i in range(5):
-            cards = f.readline().split()
-            hand_1 = Hand(cards[:5])
-            hand_2 = Hand(cards[5:])
-            print(hand_1)
-            print(hand_2)
-            game = Game(hand_1, hand_2)
-        
-            print(game.player_one_wins())
+# if __name__ == "__main__":
+#     with open("../../TestResources/hands.txt", 'r') as f:
+#         for i in range(5):
+#             cards = f.readline().split()
+#             hand_1 = Hand(cards[:5])
+#             hand_2 = Hand(cards[5:])
+#             print(hand_1)
+#             print(hand_2)
+#             game = Game(hand_1, hand_2)
+#         
+#             print(game.player_one_wins())
