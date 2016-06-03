@@ -48,6 +48,37 @@ class CardTest(unittest.TestCase):
         self.assertLess(nine, ten)
       
 
+class WinPattern:
+    """ """
+    def criterion(self):
+        """What it takes to win with this pattern."""
+        pass
+    
+    def score(self):
+        """The ranking of this pattern to others."""
+        pass
+    
+    def values(self):
+        """The rank of the cards involved, highest first"""
+        pass
+    
+class Pair(WinPattern):
+    def __init__(self, cards):
+        self.cards = cards
+        self.ranks = [card.rank for card in self.cards]
+    
+    def has_n(self, card, n):
+        return self.ranks.count(card.rank) == n
+    
+    def criterion(self):
+        return any([self.has_n(card, 2) for card in self.cards])
+    
+    def values(self):
+        return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
+    
+    def score(self):
+        return 1
+
 class Hand:
     """An unordered collection of cards."""
     def __init__(self, card_strings):
@@ -61,7 +92,7 @@ class Hand:
         return set([card.rank for card in self.cards if self.has_n(card, 2)]) 
     
     def pair(self):
-        return str(self.find_pair()) if len(self.find_pair()) == 1 else []
+        return Pair(self.cards).criterion()
     
     def pair_without_values(self):
         return any([self.has_n(card, 2) for card in self.cards])
@@ -95,7 +126,7 @@ class Hand:
         if self.two_pair():
             return 2
         if self.pair():
-            return 1
+            return Pair(self.cards).score()
         return 0
     
     def __str__(self):
@@ -129,7 +160,7 @@ class HandTest(unittest.TestCase):
         eights = Hand(["8S", "8D"])
         fives = Hand(["5H", "5C"])
         
-        self.assertLess(fives.pair(), eights.pair())
+        self.assertLess(Pair(fives.cards).values(), Pair(eights.cards).values())
         
     def test_can_see_two_pair(self):
         one_pair = Hand(["2S", "2H", "3S", "4S"])
