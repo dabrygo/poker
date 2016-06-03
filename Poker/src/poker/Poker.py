@@ -6,6 +6,7 @@ Created on Jun 2, 2016
 import unittest
 
 class Card:
+    """A playing card that has rank and suit"""
     ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 
              '10', 'J', 'Q', 'K', 'A']
     def __init__(self, string):
@@ -37,3 +38,25 @@ class CardTest(unittest.TestCase):
         queen = Card("QH")
         ace = Card("AH")
         self.assertTrue(ace > queen)
+
+
+class Hand:
+    """An unordered collection of five cards"""
+    def __init__(self, card_strings):
+        self.cards = [Card(card) for card in card_strings]
+        self.ranks = [card.rank for card in self.cards]
+        
+    def has_pair(self):
+        return any([self.ranks.count(card.rank) == 2 for card in self.cards])
+    
+
+class HandTest(unittest.TestCase):
+    def test_hand_has_pair(self):
+        cards = ["5H", "5C", "6S", "7S", "KD"]
+        hand = Hand(cards)
+        self.assertTrue(hand.has_pair())
+        
+    def test_hand_does_not_have_pair(self):
+        cards = ["2H", "5C", "6S", "7S", "KD"]
+        hand = Hand(cards)
+        self.assertFalse(hand.has_pair())
