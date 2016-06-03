@@ -52,7 +52,7 @@ class CardTest(unittest.TestCase):
       
 
 class WinPattern:
-    """ """
+    """An """
     def __init__(self, hand):
         self.cards = hand.cards
         self.ranks = [card.rank for card in self.cards]
@@ -195,6 +195,7 @@ class TestThreeOfAKind(unittest.TestCase):
         
                
 class Straight(WinPattern):
+    """A hand has consecutive cards"""
     def __init__(self, hand):
         super().__init__(hand)
     
@@ -226,6 +227,7 @@ class TestStraight(unittest.TestCase):
 
 
 class Flush(WinPattern):
+    """A hand has cards of only one suit"""
     def __init__(self, hand):
         super().__init__(hand)
         
@@ -248,6 +250,7 @@ class TestFlush(unittest.TestCase):
         
 
 class FullHouse(WinPattern):
+    """A hand has a pair of one rank and a three of a kind of another"""
     def __init__(self, hand):
         super().__init__(hand)
         
@@ -308,6 +311,7 @@ class TestFourOfAKind(unittest.TestCase):
  
 
 class StraightFlush(WinPattern):
+    """A hand has consecutive cards of the same suit"""
     def __init__(self, hand):
         super().__init__(hand)
         
@@ -334,6 +338,7 @@ class TestStraightFlush(unittest.TestCase):
         
 
 class RoyalFlush(WinPattern):
+    """A hand has the highest consecutive cards of the same suit"""
     def __init__(self, hand):
         super().__init__(hand)
     
