@@ -16,6 +16,9 @@ class Card:
     def __lt__(self, other):
         return Card.ranks.index(self.rank) < Card.ranks.index(other.rank)
     
+    def __eq__(self, other):
+        return self.rank == other.rank
+    
     def __str__(self):
         return self.rank + self.suit
         
@@ -27,12 +30,12 @@ class CardTest(unittest.TestCase):
         self.assertEqual("A", card.rank)
         self.assertEqual("S", card.suit)
     
-    def test_ace_beats_2(self):
+    def test_ace_high(self):
         low_card = Card("2S")
         high_card = Card("AS")
         self.assertLess(low_card, high_card)
         
-    def test_ace_ace_draw(self):
+    def test_draw(self):
         ace_1 = Card("AS")
         ace_2 = Card("AH")
         self.assertFalse(ace_1 < ace_2)
@@ -59,14 +62,36 @@ class WinPattern:
         pass
     
     def values(self):
-        """The rank of the cards involved, highest first.d"""
+        """The rank of the cards involved, highest first."""
         pass
 
 
+class HighCard(WinPattern):
+    def __init__(self, hand):
+        self.cards = hand.cards
+    
+    def criterion(self):
+        pass
+    
+    def values(self):
+        sort_by_rank = sorted(self.cards, reverse=True)
+        return sort_by_rank[0]
+    
+    @staticmethod
+    def score():
+        return 0
+   
+   
+class TestHighCard(unittest.TestCase):
+    def test_low_high_card(self):
+        bad_hand = Hand(["7D", "2H", "3D", "5C", "4S"])
+        self.assertEqual(Card("7D"), HighCard(bad_hand).values())
+
+    
 class Pair(WinPattern):
     """A hand has two cards of the same rank."""
-    def __init__(self, cards):
-        self.cards = cards
+    def __init__(self, hand):
+        self.cards = hand.cards
         self.ranks = [card.rank for card in self.cards]
     
     def has_n(self, card, n):
@@ -86,21 +111,21 @@ class Pair(WinPattern):
 class TestPair(unittest.TestCase):    
     def test_is_pair(self):
         pair = Hand(["5H", "5S"])
-        self.assertTrue(Pair(pair.cards).criterion())
+        self.assertTrue(Pair(pair).criterion())
                 
     def test_is_not_pair(self):
         pair = Hand(["4S", "5S"])
-        self.assertFalse(Pair(pair.cards).criterion())
+        self.assertFalse(Pair(pair).criterion())
         
     def test_know_rank_of_pair(self):
         hand = Hand(["7S", "2H", "3D", "7C", "KD"])
-        self.assertEqual(["7"], Pair(hand.cards).values())
+        self.assertEqual(["7"], Pair(hand).values())
 
 
 class TwoPair(WinPattern):
     """A hand has two cards of the same rank."""
-    def __init__(self, cards):
-        self.cards = cards
+    def __init__(self, hand):
+        self.cards = hand.cards
         self.ranks = [card.rank for card in self.cards]
     
     def has_n(self, card, n):
@@ -120,21 +145,21 @@ class TwoPair(WinPattern):
 class TestTwoPair(unittest.TestCase):    
     def test_is_two_pair(self):
         two_pair = Hand(["5H", "5S", "8H", "8D"])
-        self.assertTrue(TwoPair(two_pair.cards).criterion())
+        self.assertTrue(TwoPair(two_pair).criterion())
                 
     def test_lone_pair_is_not_two_pair(self):
         pair = Hand(["4S", "4S", "7H", "8D"])
-        self.assertFalse(TwoPair(pair.cards).criterion())
+        self.assertFalse(TwoPair(pair).criterion())
         
     def test_know_ranks_of_two_pair(self):
         hand = Hand(["7S", "3H", "3D", "7C", "KD"])
-        self.assertEqual(["3", "7"], TwoPair(hand.cards).values())
+        self.assertEqual(["3", "7"], TwoPair(hand).values())
 
         
 class ThreeOfAKind(WinPattern):
     """A hand has three cards of the same rank."""
-    def __init__(self, cards):
-        self.cards = cards
+    def __init__(self, hand):
+        self.cards = hand.cards
         self.ranks = [card.rank for card in self.cards]
     
     def has_n(self, card, n):
@@ -154,19 +179,19 @@ class ThreeOfAKind(WinPattern):
 class TestThreeOfAKind(unittest.TestCase):    
     def test_is_three_of_a_kind(self):
         pair = Hand(["5H", "5S", "5D"])
-        self.assertTrue(ThreeOfAKind(pair.cards).criterion())
+        self.assertTrue(ThreeOfAKind(pair).criterion())
                 
     def test_pair_is_not_three_of_a_kind(self):
         pair = Hand(["4S", "5S", "5D"])
-        self.assertFalse(ThreeOfAKind(pair.cards).criterion())
+        self.assertFalse(ThreeOfAKind(pair).criterion())
         
     def test_four_of_a_kind_is_not_three_of_a_kind(self):
         hand = Hand(["7S", "7H", "3D", "7C", "7D"])
-        self.assertFalse(ThreeOfAKind(hand.cards).criterion())
+        self.assertFalse(ThreeOfAKind(hand).criterion())
         
     def test_know_rank_of_three_of_a_kind(self):
         hand = Hand(["7S", "7H", "3D", "7C", "KD"])
-        self.assertEqual(["7"], ThreeOfAKind(hand.cards).values())
+        self.assertEqual(["7"], ThreeOfAKind(hand).values())
         
 
 class Hand:
@@ -176,13 +201,10 @@ class Hand:
         self.ranks = [card.rank for card in self.cards]
     
     def pair(self):
-        return Pair(self.cards).criterion()
-    
-    def two_pair(self):
-        return TwoPair(self.cards).criterion()
+        return Pair(self).criterion()
     
     def three_of_a_kind(self):
-        return ThreeOfAKind(self.cards).criterion()
+        return ThreeOfAKind(self).criterion()
     
     def straight(self):
         self.sort_hand(highest_first=False)
@@ -201,14 +223,14 @@ class Hand:
     def sort_hand(self, highest_first=True):
         self.cards = sorted(self.cards, reverse=highest_first)
         
-    def score(self):
-        if ThreeOfAKind(self.cards).criterion():
-            return ThreeOfAKind.score()
-        if TwoPair(self.cards).criterion():
-            return TwoPair.score()
-        if Pair(self.cards).criterion():
-            return Pair.score()
-        return 0
+    def win_pattern(self):
+        if ThreeOfAKind(self).criterion():
+            return ThreeOfAKind(self)
+        if TwoPair(self).criterion():
+            return TwoPair(self)
+        if Pair(self).criterion():
+            return Pair(self)
+        return HighCard(self)
     
     def __str__(self):
         return ' '.join(str(card) for card in self.cards)
@@ -228,12 +250,6 @@ class HandTest(unittest.TestCase):
     def test_sort_hand(self):
         self.hand.sort_hand()
         self.assertEqual("K", self.hand.cards[0].rank)
-        
-    def test_pair_eight_beats_pair_five(self):
-        eights = Hand(["8S", "8D"])
-        fives = Hand(["5H", "5C"])
-        
-        self.assertLess(Pair(fives.cards).values(), Pair(eights.cards).values())
         
     def test_small_straight(self):
         small_straight = Hand(["2S", "3D", "4H", "5S", "6C"])
@@ -255,13 +271,6 @@ class HandTest(unittest.TestCase):
         full_house = Hand(["4S", "4D", "7H", "7C", "7D"])
         self.assertTrue(full_house.full_house())
         
-#     def test_is_not_full_house(self):
-#         pair = Hand(["4S", "4D", "7H", "8C", "9D"])
-#         self.assertFalse(pair.full_house())
-#         three_of_a_kind = Hand(["4S", "4D", "4H", "8C", "9D"])
-#         self.assertFalse(three_of_a_kind.full_house())
-#         two_pair = Hand(["4S", "4D", "7H", "7C", "8D"])
-#         self.assertFalse(two_pair)
 
 class Game:
     """A set of two hands, one of which is a winner."""
@@ -271,29 +280,33 @@ class Game:
         hand_2.sort_hand()
         self.hand_2 = hand_2
     
-    def player_one_has_a_better_hand(self):
-        return self.hand_1.score() > self.hand_2.score()
+    def player_one_has_a_better_win_pattern(self):
+        return self.hand_1.win_pattern().score() > self.hand_2.win_pattern().score()
 
-    def both_players_have_pairs(self):
-        return self.hand_1.score() == Pair.score() == self.hand_2.score()
-
-    def both_players_have_two_pair(self):
-        return self.hand_1.score() == TwoPair.score() == self.hand_2.score()
+    def both_players_have_same_win_pattern(self):
+        return self.hand_1.win_pattern().score() == self.hand_2.win_pattern().score()
 
     def player_one_wins(self):
-        if self.player_one_has_a_better_hand():
+        if self.player_one_has_a_better_win_pattern():
             return True
-        elif self.both_players_have_two_pair():
-            return self.hand_1.two_pair() > self.hand_2.two_pair() 
-        elif self.both_players_have_pairs():
-            return self.hand_1.pair() > self.hand_2.pair()
-        return self.hand_1.cards[0] > self.hand_2.cards[0]
+        elif self.both_players_have_same_win_pattern():
+            return self.hand_1.win_pattern().values() > self.hand_2.win_pattern().values()
+        return False
 
     def player_two_wins(self):
         return not self.player_one_wins()
     
 
 class GameTest(unittest.TestCase):
+    
+    def test_pair_eight_beats_pair_five(self):
+        eights = Hand(["8S", "8D"])
+        fives = Hand(["5H", "5C"])
+        
+        game = Game(eights, fives)
+        
+        self.assertTrue(game.player_one_wins())
+    
     def test_player_1_has_high_card(self):
         hand_1 = Hand(["5D", "8C", "9S", "JS", "AC"])
         hand_2 = Hand(["2C", "5C", "7D", "8S", "QH"])
