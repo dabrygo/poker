@@ -79,7 +79,7 @@ class HighCard(WinPattern):
         self.cards = hand.cards
     
     def criterion(self):
-        pass
+        return True
     
     def values(self):
         sort_by_rank = sorted(self.cards, reverse=True)
@@ -221,13 +221,28 @@ class TestStraight(unittest.TestCase):
         self.assertTrue(Straight(big_straight).criterion())
 
 
+class Flush(WinPattern):
+    def __init__(self, hand):
+        super().__init__(hand)
+        
+    def criterion(self):
+        return all([card.suit == self.cards[0].suit for card in self.cards])
+    
+
+class TestFlush(unittest.TestCase):
+    def test_is_a_flush(self):
+        flush = Hand(["5D", "6D", "2D", "KD", "TD"])
+        self.assertTrue(Flush(flush).criterion())
+    
+    def test_one_not_same_suit(self):
+        not_flush = Hand(["5D", "6D", "2H", "KD", "TD"])
+        self.assertFalse(Flush(not_flush).criterion())
+        
+
 class Hand:
     """An unordered collection of cards."""
     def __init__(self, card_strings):
         self.cards = [Card(card) for card in card_strings]
-    
-    def flush(self):
-        return all([card.suit == self.cards[0].suit for card in self.cards])
     
     def full_house(self):
         return Pair(self).criterion() and ThreeOfAKind(self).criterion()
@@ -236,6 +251,8 @@ class Hand:
         self.cards = sorted(self.cards, reverse=highest_first)
         
     def win_pattern(self):
+        if Flush(self).criterion():
+            return Flush(self)
         if Straight(self).criterion():
             return Straight(self)
         if ThreeOfAKind(self).criterion():
@@ -257,14 +274,6 @@ class HandTest(unittest.TestCase):
     def test_sort_hand(self):
         self.hand.sort_hand()
         self.assertEqual("K", self.hand.cards[0].rank)
-        
-    def test_all_same_suit(self):
-        flush = Hand(["AS", "2S", "5S", "7S", "9S"])
-        self.assertTrue(flush.flush())
-    
-    def test_all_not_same_suit(self):
-        not_flush = Hand(["AS", "2S", "5H", "7S", "9S"])
-        self.assertFalse(not_flush.flush())
     
     def test_is_full_house(self):
         full_house = Hand(["4S", "4D", "7H", "7C", "7D"])
