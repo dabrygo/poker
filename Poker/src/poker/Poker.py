@@ -331,6 +331,33 @@ class TestStraightFlush(unittest.TestCase):
     def test_flush_is_not_always_straight_flush(self):
         hand = Hand(["2S", "3S", "4S", "5S", "7S"])
         self.assertFalse(StraightFlush(hand).criterion())
+        
+
+class RoyalFlush(WinPattern):
+    def __init__(self, hand):
+        super().__init__(hand)
+    
+    def criterion(self):
+        return StraightFlush(self).criterion() and HighCard(self).values()[0] == "A" 
+    
+    @staticmethod
+    def score():
+        return 9
+
+
+class TestRoyalFlush(unittest.TestCase):
+    def test_royal_flush(self):
+        hand = Hand(["AD", "KD", "QD", "JD", "TD"])
+        self.assertTrue(RoyalFlush(hand).criterion())
+    
+    def test_straight_flush_but_not_royal(self):
+        hand = Hand(["KD", "QD", "JD", "TD", "9D"])
+        self.assertFalse(RoyalFlush(hand).criterion())
+    
+    def test_straight_but_not_royal_flush(self):
+        hand = Hand(["AS", "KD", "QD", "JD", "TD"])
+        self.assertFalse(RoyalFlush(hand).criterion())
+        
 
 class Hand:
     """An unordered collection of cards."""
@@ -340,8 +367,9 @@ class Hand:
     def sort_hand(self, highest_first=True):
         self.cards = sorted(self.cards, reverse=highest_first)
       
-    # TODO Test each of these to ensure branches reached  
     def win_pattern(self):
+        if RoyalFlush(self).criterion():
+            return RoyalFlush(self)
         if StraightFlush(self).criterion():
             return StraightFlush(self)
         if FourOfAKind(self).criterion():
@@ -371,7 +399,8 @@ class HandTest(unittest.TestCase):
     def test_sort_hand(self):
         self.hand.sort_hand()
         self.assertEqual("K", self.hand.cards[0].rank)
-        
+    
+    # TODO Test each win pattern   
 
 # TODO: More "tied" tests
 class Game:
