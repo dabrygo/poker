@@ -52,7 +52,7 @@ class CardTest(unittest.TestCase):
       
 
 class WinPattern:
-    """An """
+    """"""
     def __init__(self, hand):
         self.cards = hand.cards
         self.ranks = [card.rank for card in self.cards]
@@ -131,7 +131,7 @@ class TestPair(unittest.TestCase):
 
 
 class TwoPair(WinPattern):
-    """A hand has two cards of the same rank."""
+    """A hand has two sets of two cards of the same rank."""
     def __init__(self, hand):
         super().__init__(hand)
     
