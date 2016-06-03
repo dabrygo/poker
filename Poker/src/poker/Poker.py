@@ -38,7 +38,7 @@ class CardTest(unittest.TestCase):
     def test_draw(self):
         ace_1 = Card("AS")
         ace_2 = Card("AH")
-        self.assertFalse(ace_1 < ace_2)
+        self.assertEqual(ace_1, ace_2)
         
     def test_ace_beats_queen(self):
         queen = Card("QH")
@@ -53,6 +53,10 @@ class CardTest(unittest.TestCase):
 
 class WinPattern:
     """ """
+    def __init__(self, hand):
+        self.cards = hand.cards
+        self.ranks = [card.rank for card in self.cards]
+    
     def criterion(self):
         """What it takes to win with this pattern."""
         pass
@@ -64,6 +68,9 @@ class WinPattern:
     def values(self):
         """The rank of the cards involved, highest first."""
         pass
+    
+    def has_n(self, card, n):
+        return self.ranks.count(card.rank) == n
 
 
 class HighCard(WinPattern):
@@ -86,16 +93,16 @@ class TestHighCard(unittest.TestCase):
     def test_low_high_card(self):
         bad_hand = Hand(["7D", "2H", "3D", "5C", "4S"])
         self.assertEqual(Card("7D"), HighCard(bad_hand).values())
+    
+    def test_ace_high(self):
+        good_hand = Hand(["AD", "KD", "QD", "JD", "TD"])
+        self.assertEqual(Card("AD"), HighCard(good_hand).values())
 
     
 class Pair(WinPattern):
     """A hand has two cards of the same rank."""
     def __init__(self, hand):
-        self.cards = hand.cards
-        self.ranks = [card.rank for card in self.cards]
-    
-    def has_n(self, card, n):
-        return self.ranks.count(card.rank) == n
+        super().__init__(hand)
     
     def criterion(self):
         return len(set([card.rank for card in self.cards if self.has_n(card, 2)])) == 1 
@@ -125,11 +132,7 @@ class TestPair(unittest.TestCase):
 class TwoPair(WinPattern):
     """A hand has two cards of the same rank."""
     def __init__(self, hand):
-        self.cards = hand.cards
-        self.ranks = [card.rank for card in self.cards]
-    
-    def has_n(self, card, n):
-        return self.ranks.count(card.rank) == n
+        super().__init__(hand)
     
     def criterion(self):
         return len(set([card.rank for card in self.cards if self.has_n(card, 2)])) == 2 
@@ -159,11 +162,7 @@ class TestTwoPair(unittest.TestCase):
 class ThreeOfAKind(WinPattern):
     """A hand has three cards of the same rank."""
     def __init__(self, hand):
-        self.cards = hand.cards
-        self.ranks = [card.rank for card in self.cards]
-    
-    def has_n(self, card, n):
-        return self.ranks.count(card.rank) == n
+        super().__init__(hand)
     
     def criterion(self):
         return any([self.has_n(card, 3) for card in self.cards])
@@ -192,19 +191,12 @@ class TestThreeOfAKind(unittest.TestCase):
     def test_know_rank_of_three_of_a_kind(self):
         hand = Hand(["7S", "7H", "3D", "7C", "KD"])
         self.assertEqual(["7"], ThreeOfAKind(hand).values())
-        
+
 
 class Hand:
     """An unordered collection of cards."""
     def __init__(self, card_strings):
         self.cards = [Card(card) for card in card_strings]
-        self.ranks = [card.rank for card in self.cards]
-    
-    def pair(self):
-        return Pair(self).criterion()
-    
-    def three_of_a_kind(self):
-        return ThreeOfAKind(self).criterion()
     
     def straight(self):
         self.sort_hand(highest_first=False)
@@ -218,7 +210,7 @@ class Hand:
         return all([card.suit == self.cards[0].suit for card in self.cards])
     
     def full_house(self):
-        return self.pair() and self.three_of_a_kind()
+        return Pair(self).criterion() and ThreeOfAKind(self).criterion()
     
     def sort_hand(self, highest_first=True):
         self.cards = sorted(self.cards, reverse=highest_first)
@@ -239,13 +231,6 @@ class Hand:
 class HandTest(unittest.TestCase):
     def setUp(self):
         self.hand = Hand(["5H", "5C", "6S", "7S", "KD"])
-        
-    def test_hand_has_pair(self):
-        self.assertTrue(self.hand.pair())
-        
-    def test_hand_does_not_have_pair(self):
-        hand = Hand(["2H", "5C", "6S", "7S", "KD"])
-        self.assertFalse(hand.pair())
         
     def test_sort_hand(self):
         self.hand.sort_hand()
