@@ -63,6 +63,7 @@ class WinPattern:
         pass
     
 class Pair(WinPattern):
+    """A hand has two cards of the same rank."""
     def __init__(self, cards):
         self.cards = cards
         self.ranks = [card.rank for card in self.cards]
@@ -78,6 +79,21 @@ class Pair(WinPattern):
     
     def score(self):
         return 1
+
+
+class TestPair(unittest.TestCase):    
+    def test_is_pair(self):
+        pair = Hand(["5H", "5S"])
+        self.assertTrue(Pair(pair.cards).criterion())
+                
+    def test_is_not_pair(self):
+        pair = Hand(["4S", "5S"])
+        self.assertFalse(Pair(pair.cards).criterion())
+        
+    def test_know_rank_of_pair(self):
+        hand = Hand(["7S", "2H", "3D", "7C", "KD"])
+        self.assertEqual(["7"], Pair(hand.cards).values())
+        
 
 class Hand:
     """An unordered collection of cards."""
@@ -125,7 +141,7 @@ class Hand:
             return 3
         if self.two_pair():
             return 2
-        if self.pair():
+        if Pair(self.cards).criterion():
             return Pair(self.cards).score()
         return 0
     
@@ -136,14 +152,6 @@ class Hand:
 class HandTest(unittest.TestCase):
     def setUp(self):
         self.hand = Hand(["5H", "5C", "6S", "7S", "KD"])
-    
-    def test_is_pair(self):
-        pair = Hand(["5H", "5S"])
-        self.assertTrue(pair.has_n(Card("5H"), 2))
-        
-    def test_is_not_pair(self):
-        pair = Hand(["4S", "5S"])
-        self.assertFalse(pair.has_n(Card("4S"), 2))
         
     def test_hand_has_pair(self):
         self.assertTrue(self.hand.pair())
