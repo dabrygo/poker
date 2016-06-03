@@ -205,6 +205,10 @@ class Straight(WinPattern):
             if self.cards[i].rank != Card.ranks[start_index + i]:
                 return False
         return True
+    
+    @staticmethod
+    def score():
+        return 4
 
 
 class TestStraight(unittest.TestCase):
@@ -226,8 +230,11 @@ class Flush(WinPattern):
         super().__init__(hand)
         
     def criterion(self):
-        return all([card.suit == self.cards[0].suit for card in self.cards])
+        return len(set([card.suit for card in self.cards])) == 1
     
+    @staticmethod
+    def score():
+        return 5    
 
 class TestFlush(unittest.TestCase):
     def test_is_a_flush(self):
@@ -239,18 +246,36 @@ class TestFlush(unittest.TestCase):
         self.assertFalse(Flush(not_flush).criterion())
         
 
+class FullHouse(WinPattern):
+    def __init__(self, hand):
+        super().__init__(hand)
+        
+    def criterion(self):
+        return Pair(self).criterion() and ThreeOfAKind(self).criterion()
+
+    @staticmethod
+    def score():
+        return 6
+
+
+class TestFullHouse(unittest.TestCase):
+    def test_is_full_house(self):
+        full_house = Hand(["4S", "4D", "7H", "7C", "7D"])
+        self.assertTrue(FullHouse(full_house).criterion())
+
+
 class Hand:
     """An unordered collection of cards."""
     def __init__(self, card_strings):
         self.cards = [Card(card) for card in card_strings]
     
-    def full_house(self):
-        return Pair(self).criterion() and ThreeOfAKind(self).criterion()
-    
     def sort_hand(self, highest_first=True):
         self.cards = sorted(self.cards, reverse=highest_first)
-        
+      
+    # TODO Test each of these to ensure branches reached  
     def win_pattern(self):
+        if FullHouse(self).criterion():
+            return FullHouse(self)
         if Flush(self).criterion():
             return Flush(self)
         if Straight(self).criterion():
@@ -274,10 +299,6 @@ class HandTest(unittest.TestCase):
     def test_sort_hand(self):
         self.hand.sort_hand()
         self.assertEqual("K", self.hand.cards[0].rank)
-    
-    def test_is_full_house(self):
-        full_house = Hand(["4S", "4D", "7H", "7C", "7D"])
-        self.assertTrue(full_house.full_house())
         
 
 # TODO: More "tied" tests
