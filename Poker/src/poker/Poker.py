@@ -59,7 +59,7 @@ class WinPattern:
         pass
     
     def values(self):
-        """The rank of the cards involved, highest first"""
+        """The rank of the cards involved, highest first.d"""
         pass
     
 class Pair(WinPattern):
@@ -94,6 +94,39 @@ class TestPair(unittest.TestCase):
         hand = Hand(["7S", "2H", "3D", "7C", "KD"])
         self.assertEqual(["7"], Pair(hand.cards).values())
         
+        
+class ThreeOfAKind(WinPattern):
+    """A hand has three cards of the same rank."""
+    def __init__(self, cards):
+        self.cards = cards
+        self.ranks = [card.rank for card in self.cards]
+    
+    def has_n(self, card, n):
+        return self.ranks.count(card.rank) == n
+    
+    def criterion(self):
+        return any([self.has_n(card, 3) for card in self.cards])
+    
+    def values(self):
+        return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 3)])))
+    
+    def score(self):
+        return 3
+
+
+class TestThreeOfAKind(unittest.TestCase):    
+    def test_is_three_of_a_kind(self):
+        pair = Hand(["5H", "5S", "5D"])
+        self.assertTrue(ThreeOfAKind(pair.cards).criterion())
+                
+    def test_is_not_three_of_a_kind(self):
+        pair = Hand(["4S", "5S", "5D"])
+        self.assertFalse(ThreeOfAKind(pair.cards).criterion())
+        
+    def test_know_rank_of_three_of_a_kind(self):
+        hand = Hand(["7S", "7H", "3D", "7C", "KD"])
+        self.assertEqual(["7"], ThreeOfAKind(hand.cards).values())
+        
 
 class Hand:
     """An unordered collection of cards."""
@@ -111,10 +144,10 @@ class Hand:
         return Pair(self.cards).criterion()
     
     def two_pair(self):
-        return len(self.find_pair()) == 2
+        return len(Pair(self.cards).values()) == 2
     
     def three_of_a_kind(self):
-        return set([card.rank for card in self.cards if self.has_n(card, 3)])
+        return ThreeOfAKind(self.cards).criterion()
     
     def straight(self):
         self.sort_hand(highest_first=False)
@@ -134,8 +167,8 @@ class Hand:
         self.cards = sorted(self.cards, reverse=highest_first)
         
     def score(self):
-        if self.three_of_a_kind():
-            return 3
+        if ThreeOfAKind(self.cards).criterion():
+            return ThreeOfAKind(self.cards).score()
         if self.two_pair():
             return 2
         if Pair(self.cards).criterion():
