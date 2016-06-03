@@ -49,6 +49,9 @@ class Hand:
     def has_pair(self):
         return any([self.ranks.count(card.rank) == 2 for card in self.cards])
     
+    def sort_hand(self):
+        self.cards = sorted(self.cards, reverse=True)
+    
 
 class HandTest(unittest.TestCase):
     def test_hand_has_pair(self):
@@ -60,3 +63,33 @@ class HandTest(unittest.TestCase):
         cards = ["2H", "5C", "6S", "7S", "KD"]
         hand = Hand(cards)
         self.assertFalse(hand.has_pair())
+        
+    def test_sort_hand(self):
+        cards = ["2H", "5C", "6S", "7S", "KD"]
+        hand = Hand(cards)
+        hand.sort_hand()
+        self.assertEqual("K", hand.cards[0].rank)
+        
+
+class Game:
+    """A set of two hands, one of which is a winner"""
+    def __init__(self, hand_1, hand_2):
+        hand_1.sort_hand()
+        self.hand_1 = hand_1
+        hand_2.sort_hand
+        self.hand_2 = hand_2
+        
+    def player_one_wins(self):
+        return self.hand_1.cards[0] > self.hand_2.cards[0]
+    
+
+class GameTest(unittest.TestCase):
+    def test_player_1_has_high_card(self):
+        hand_1 = Hand(["5D", "8C", "9S", "JS", "AC"])
+        hand_2 = Hand(["2C", "5C", "7D", "8S", "QH"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_one_wins())        
+        
+    
