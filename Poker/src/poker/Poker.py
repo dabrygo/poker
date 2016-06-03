@@ -110,9 +110,6 @@ class Hand:
     def pair(self):
         return Pair(self.cards).criterion()
     
-    def pair_without_values(self):
-        return any([self.has_n(card, 2) for card in self.cards])
-    
     def two_pair(self):
         return len(self.find_pair()) == 2
     
@@ -131,7 +128,7 @@ class Hand:
         return all([card.suit == self.cards[0].suit for card in self.cards])
     
     def full_house(self):
-        return self.pair_without_values() and self.three_of_a_kind()
+        return self.pair() and self.three_of_a_kind()
     
     def sort_hand(self, highest_first=True):
         self.cards = sorted(self.cards, reverse=highest_first)
