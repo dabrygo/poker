@@ -203,4 +203,4 @@ class TestTie(unittest.TestCase):
         
         game = Game(hand_1, hand_2)
         
-        self.assertTrue(game.player_one_wins())
+        self.assertTrue(game.player_one_wins())
