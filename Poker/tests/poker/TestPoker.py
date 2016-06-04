@@ -7,6 +7,8 @@ Created on Jun 3, 2016
 import unittest
 
 from poker.Poker import Card, Hand, Game
+from poker import WinPatterns
+from poker.WinPatterns import *
 
 class TestCard(unittest.TestCase):
     def test_card(self):
@@ -44,43 +46,43 @@ class TestHand(unittest.TestCase):
     # TODO No Magic numbers when it comes to testing score
     def test_royal_flush(self):
         hand = Hand(["JH", "KH", "TH", "AH", "QH"])
-        self.assertEqual(0, hand.score())
+        self.assertEqual(WinPatterns.order.index(RoyalFlush), hand.score())
       
     def test_straight_flush(self):
         hand = Hand(["JH", "8H", "TH", "9H", "7H"])
-        self.assertEqual(1, hand.score())
+        self.assertEqual(WinPatterns.order.index(StraightFlush), hand.score())
         
     def test_four_of_a_kind(self):
         hand = Hand(["JH", "7H", "7D", "7C", "7S"])
-        self.assertEqual(2, hand.score())
+        self.assertEqual(WinPatterns.order.index(FourOfAKind), hand.score())
 
     def test_full_house(self):
         hand = Hand(["5H", "5S", "7D", "7C", "7S"])
-        self.assertEqual(3, hand.score())
+        self.assertEqual(WinPatterns.order.index(FullHouse), hand.score())
 
     def test_flush(self):
         hand = Hand(["TH", "7H", "2H", "KH", "3H"])
-        self.assertEqual(4, hand.score())
+        self.assertEqual(WinPatterns.order.index(Flush), hand.score())
         
     def test_straight(self):
         hand = Hand(["6H", "3S", "4H", "2C", "5H"])
-        self.assertEqual(5, hand.score())
+        self.assertEqual(WinPatterns.order.index(Straight), hand.score())
         
     def test_three_of_a_kind(self):
         hand = Hand(["6C", "KD", "3H", "3S", "3D"])
-        self.assertEqual(6, hand.score())
+        self.assertEqual(WinPatterns.order.index(ThreeOfAKind), hand.score())
         
     def test_two_pair(self):
         hand = Hand(["6C", "KD", "6H", "3S", "3D"])
-        self.assertEqual(7, hand.score())
+        self.assertEqual(WinPatterns.order.index(TwoPair), hand.score())
         
     def test_pair(self):
         hand = Hand(["6C", "KD", "6H", "7S", "3D"])
-        self.assertEqual(8, hand.score())
+        self.assertEqual(WinPatterns.order.index(Pair), hand.score())
         
     def test_high_card(self):
         hand = Hand(["6C", "KD", "9H", "7S", "3D"])
-        self.assertEqual(9, hand.score())
+        self.assertEqual(WinPatterns.order.index(HighCard), hand.score())
 
 
 class TestGame(unittest.TestCase):            
