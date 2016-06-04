@@ -1,7 +1,7 @@
 '''
 Created on Jun 3, 2016
 
-@author: dbgod
+@author: Daniel
 '''
 
 class WinPattern:
