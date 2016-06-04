@@ -109,8 +109,9 @@ class FullHouse(WinPattern):
         return Pair(self).criterion() and ThreeOfAKind(self).criterion()
 
     def values(self):
-        # As a convention, the triple number comes first
-        # and the pair number second
+        # Sticking to the convention of "winner first", 
+        # the triplet's rank comes first and the pair's 
+        # rank second
         return [ThreeOfAKind(self).values()[0], Pair(self).values()[0]]
 
 
@@ -151,3 +152,5 @@ class RoyalFlush(WinPattern):
         pass
 
 
+order = [RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush,
+         Straight, ThreeOfAKind, TwoPair, Pair, HighCard]
