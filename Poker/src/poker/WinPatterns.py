@@ -154,3 +154,8 @@ class RoyalFlush(WinPattern):
 
 order = [RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush,
          Straight, ThreeOfAKind, TwoPair, Pair, HighCard]
+
+if __name__ == "__main__":
+    import unittest
+    test_suite = unittest.TestLoader().discover("tests", top_level_dir="../..")
+    unittest.TextTestRunner().run(test_suite)
