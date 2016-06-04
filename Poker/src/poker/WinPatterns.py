@@ -252,6 +252,24 @@ class FourOfAKind(WinPattern):
     
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 4)])))
+    
+    def trumps(self, other):
+        quartet = self.values()[0]
+        other_quartet = self.values()[0]
+        if ranks.index(quartet) < ranks.index(other_quartet):
+            return False
+        elif ranks.index(quartet) > ranks.index(other_quartet):
+            return True
+        sort_by_rank = sorted(self.cards, reverse=True)
+        other_sort_by_rank = sorted(other.cards, reverse=True)
+        for i, card in enumerate(sort_by_rank):
+            if card < other_sort_by_rank[i]:
+                return False
+            elif card == other_sort_by_rank[i]:
+                continue
+            else:
+                return True
+        raise NotImplementedError  
 
 
 class StraightFlush(WinPattern):
@@ -277,6 +295,9 @@ class RoyalFlush(WinPattern):
     # TODO How to handle RoyalFlush tie?
     def values(self):
         pass
+    
+    def trumps(self, other):
+        raise NotImplementedError # Draw
 
 
 order = [RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush,

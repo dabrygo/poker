@@ -147,15 +147,7 @@ class TestTie(unittest.TestCase):
         game = Game(hand_1, hand_2)
         
         self.assertTrue(game.player_two_wins())
-        
-    def test_one_player_has_smaller_four_of_a_kind(self):
-        hand_1 = Hand(["5H", "5S", "5C", "5D", "QH"])
-        hand_2 = Hand(["KH", "KS", "KC", "KD", "2H"])
-        
-        game = Game(hand_1, hand_2)
-        
-        self.assertTrue(game.player_two_wins())
-        
+    
     @unittest.skip("Worry about multideck games later...")
     def test_both_players_have_same_four_of_a_kind(self):
         pass
@@ -264,6 +256,14 @@ class TestTie(unittest.TestCase):
         
         print(game)
         
+    def test_one_player_has_smaller_four_of_a_kind(self):
+        hand_1 = Hand(["KH", "KS", "KC", "KD", "2H"])
+        hand_2 = Hand(["5H", "5S", "5C", "5D", "QH"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_one_wins())
+    
 
 class TestLowCardWins(unittest.TestCase):
     """Hands are nearly identical except for lowest card."""
@@ -306,5 +306,14 @@ class TestLowCardWins(unittest.TestCase):
         
         game = Game(high_flush, low_flush)
 
+        self.assertTrue(game.player_one_wins())
+    
+    @unittest.skip("")
+    def test_four_of_a_kind_wins_on_low_card(self):
+        hand_1 = Hand(["KH", "KS", "KC", "KD", "QH"])
+        hand_2 = Hand(["KH", "KS", "KC", "KD", "2H"])
+        
+        game = Game(hand_1, hand_2)
+        
         self.assertTrue(game.player_one_wins())
         
