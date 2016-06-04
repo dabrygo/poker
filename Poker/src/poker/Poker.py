@@ -365,6 +365,8 @@ class TestRoyalFlush(unittest.TestCase):
         
 
 class Hand:
+    order = [RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush,
+             Straight, ThreeOfAKind, TwoPair, Pair, HighCard]
     """An unordered collection of cards."""
     def __init__(self, card_strings):
         self.cards = [Card(card) for card in card_strings]
@@ -373,25 +375,9 @@ class Hand:
         self.cards = sorted(self.cards, reverse=highest_first)
       
     def win_pattern(self):
-        if RoyalFlush(self).criterion():
-            return RoyalFlush(self)
-        if StraightFlush(self).criterion():
-            return StraightFlush(self)
-        if FourOfAKind(self).criterion():
-            return FourOfAKind(self)
-        if FullHouse(self).criterion():
-            return FullHouse(self)
-        if Flush(self).criterion():
-            return Flush(self)
-        if Straight(self).criterion():
-            return Straight(self)
-        if ThreeOfAKind(self).criterion():
-            return ThreeOfAKind(self)
-        if TwoPair(self).criterion():
-            return TwoPair(self)
-        if Pair(self).criterion():
-            return Pair(self)
-        return HighCard(self)
+        for pattern in Hand.order:
+            if pattern(self).criterion():
+                return pattern(self)
     
     def __str__(self):
         return ' '.join(str(card) for card in self.cards)
