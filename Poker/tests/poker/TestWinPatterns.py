@@ -110,11 +110,7 @@ class TestFullHouse(unittest.TestCase):
     def test_suits_do_not_make_a_full_house(self):
         suit_house = Hand(["2S", "4S", "7H", "6H", "8H"])
         self.assertFalse(FullHouse(suit_house).criterion())
-        
-    def test_value_full_house(self):
-        hand = Hand(["4C", "2H", "2D", "4D", "4S"])
-        self.assertEqual(["4", "2"], FullHouse(hand).values())
-        
+
 
 class TestFourOfAKind(unittest.TestCase):    
     def test_is_four_of_a_kind(self):

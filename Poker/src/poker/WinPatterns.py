@@ -51,7 +51,7 @@ class HighCard(WinPattern):
                 continue
             else:
                 return True
-        raise NotImplementedError  
+        raise NotImplementedError # Draw
    
           
 class Pair(WinPattern):
@@ -72,16 +72,7 @@ class Pair(WinPattern):
             return True
         if ranks.index(pair_rank) < ranks.index(other_pair_rank):
             return False
-        sort_by_rank = sorted(self.cards, reverse=True)
-        other_sort_by_rank = sorted(other.cards, reverse=True)
-        for i, card in enumerate(sort_by_rank):
-            if card < other_sort_by_rank[i]:
-                return False
-            elif card == other_sort_by_rank[i]:
-                continue
-            else:
-                return True
-        raise NotImplementedError  
+        return HighCard.trumps(self, other)
 
 
 class TwoPair(WinPattern):
@@ -109,16 +100,7 @@ class TwoPair(WinPattern):
         # compare all cards (the pairs have already been
         # compared, so comparing again shouldn't hurt 
         # anything)
-        sort_by_rank = sorted(self.cards, reverse=True)
-        other_sort_by_rank = sorted(other.cards, reverse=True)
-        for i, card in enumerate(sort_by_rank):
-            if card < other_sort_by_rank[i]:
-                return False
-            elif card == other_sort_by_rank[i]:
-                continue
-            else:
-                return True
-        raise NotImplementedError  
+        return HighCard.trumps(self, other)
     
         
 class ThreeOfAKind(WinPattern):
@@ -146,16 +128,7 @@ class ThreeOfAKind(WinPattern):
         # compare all cards (the pairs have already been
         # compared, so comparing again shouldn't hurt 
         # anything)
-        sort_by_rank = sorted(self.cards, reverse=True)
-        other_sort_by_rank = sorted(other.cards, reverse=True)
-        for i, card in enumerate(sort_by_rank):
-            if card < other_sort_by_rank[i]:
-                return False
-            elif card == other_sort_by_rank[i]:
-                continue
-            else:
-                return True
-        raise NotImplementedError  
+        return HighCard.trumps(self, other) 
 
 
 class Straight(WinPattern):
@@ -174,16 +147,7 @@ class Straight(WinPattern):
         return True
     
     def trumps(self, other):
-        sort_by_rank = sorted(self.cards, reverse=True)
-        other_sort_by_rank = sorted(other.cards, reverse=True)
-        for i, card in enumerate(sort_by_rank):
-            if card < other_sort_by_rank[i]:
-                return False
-            elif card == other_sort_by_rank[i]:
-                continue
-            else:
-                return True
-        raise NotImplementedError  
+        return HighCard.trumps(self, other)
       
 
 class Flush(WinPattern):
@@ -195,16 +159,7 @@ class Flush(WinPattern):
         return len(set([card.suit for card in self.cards])) == 1
     
     def trumps(self, other):
-        sort_by_rank = sorted(self.cards, reverse=True)
-        other_sort_by_rank = sorted(other.cards, reverse=True)
-        for i, card in enumerate(sort_by_rank):
-            if card < other_sort_by_rank[i]:
-                return False
-            elif card == other_sort_by_rank[i]:
-                continue
-            else:
-                return True
-        raise NotImplementedError  
+        return HighCard.trumps(self, other)
     
 
 class FullHouse(WinPattern):
@@ -216,10 +171,7 @@ class FullHouse(WinPattern):
         return Pair(self).criterion() and ThreeOfAKind(self).criterion()
 
     def values(self):
-        # Sticking to the convention of "winner first", 
-        # the triplet's rank comes first and the pair's 
-        # rank second
-        return [ThreeOfAKind(self).values()[0], Pair(self).values()[0]]
+        pass
     
     def trumps(self, other):
         triplet = ThreeOfAKind(self).values()[0]
@@ -259,16 +211,7 @@ class FourOfAKind(WinPattern):
             return False
         elif ranks.index(quartet) > ranks.index(other_quartet):
             return True
-        sort_by_rank = sorted(self.cards, reverse=True)
-        other_sort_by_rank = sorted(other.cards, reverse=True)
-        for i, card in enumerate(sort_by_rank):
-            if card < other_sort_by_rank[i]:
-                return False
-            elif card == other_sort_by_rank[i]:
-                continue
-            else:
-                return True
-        raise NotImplementedError  
+        return HighCard.trumps(self, other) 
 
 
 class StraightFlush(WinPattern):
@@ -294,10 +237,9 @@ class RoyalFlush(WinPattern):
     def criterion(self):
         return StraightFlush(self).criterion() and HighCard(self).values()[0] == "A" 
     
-    # TODO How to handle RoyalFlush tie?
     def values(self):
-        pass
-    
+        return Straight(self).values()
+        
     def trumps(self, other):
         raise NotImplementedError # Draw
 
