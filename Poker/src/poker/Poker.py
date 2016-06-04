@@ -3,7 +3,8 @@ Created on Jun 2, 2016
 
 @author: Daniel
 '''
-from poker.WinPatterns import HighCard, Pair, TwoPair, ThreeOfAKind, Straight, Flush, FullHouse, FourOfAKind, StraightFlush, RoyalFlush
+
+from poker import WinPatterns
 
 class Card:
     """A playing card that has rank and suit."""
@@ -24,10 +25,7 @@ class Card:
         
 
 class Hand:
-    """An unordered collection of cards."""
-    order = [RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush,
-             Straight, ThreeOfAKind, TwoPair, Pair, HighCard]
-    
+    """An unordered collection of cards."""   
     def __init__(self, card_strings):
         self.cards = [Card(card) for card in card_strings]
     
@@ -35,12 +33,12 @@ class Hand:
         self.cards = sorted(self.cards, reverse=highest_first)
       
     def win_pattern(self):
-        for pattern in Hand.order:
+        for pattern in WinPatterns.order:
             if pattern(self).criterion():
                 return pattern(self)
             
     def score(self):
-        return Hand.order.index(self.win_pattern().__class__)
+        return WinPatterns.order.index(self.win_pattern().__class__)
     
     def __str__(self):
         return ' '.join(str(card) for card in self.cards)
