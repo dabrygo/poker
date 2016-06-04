@@ -5,8 +5,6 @@ Created on Jun 2, 2016
 '''
 
 from poker import WinPatterns
-from poker.WinPatterns import HighCard, Pair, TwoPair, ThreeOfAKind, Straight, Flush, FullHouse,\
-    FourOfAKind
 
 class Card:
     """A playing card that has rank and suit."""
@@ -64,14 +62,7 @@ class Game:
         if self.player_one_has_a_better_win_pattern():
             return True
         elif self.break_tie():
-            if type(self.hand_1.win_pattern()) in [HighCard, Pair, TwoPair, ThreeOfAKind, Straight, Flush, FullHouse, FourOfAKind]:
-                return self.hand_1.win_pattern().trumps(self.hand_2.win_pattern())
-            else:
-                for i, rank in enumerate(self.hand_1.win_pattern().values()):
-                    other_guy_rank = self.hand_2.win_pattern().values()[i]
-                    if Card.ranks.index(rank) < Card.ranks.index(other_guy_rank):
-                        return False
-                return True
+            return self.hand_1.win_pattern().trumps(self.hand_2.win_pattern())
         return False
 
     def player_two_wins(self):

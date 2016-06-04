@@ -3,7 +3,6 @@ Created on Jun 3, 2016
 
 @author: dbgod
 '''
-from pygments.lexers import other
 
 ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
@@ -27,7 +26,7 @@ class WinPattern:
         return self.ranks.count(card.rank) == n
     
     def trumps(self, other):
-        pass
+        raise NotImplementedError
     
 
 class HighCard(WinPattern):
@@ -282,6 +281,9 @@ class StraightFlush(WinPattern):
     
     def values(self):
         return sorted([card.rank for card in self.cards])
+    
+    def trumps(self, other):
+        return Straight(self).trumps(other)
     
 
 class RoyalFlush(WinPattern):

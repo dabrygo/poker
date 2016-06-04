@@ -84,31 +84,7 @@ class TestHand(unittest.TestCase):
 
 
 
-class TestGame(unittest.TestCase):
-    def test_pair_eight_beats_pair_five(self):
-        eights = Hand(["8S", "8D"])
-        fives = Hand(["5H", "5C"])
-        
-        game = Game(eights, fives)
-        
-        self.assertTrue(game.player_one_wins())
-    
-    def test_player_1_has_high_card(self):
-        hand_1 = Hand(["5D", "8C", "9S", "JS", "AC"])
-        hand_2 = Hand(["2C", "5C", "7D", "8S", "QH"])
-        
-        game = Game(hand_1, hand_2)
-        
-        self.assertTrue(game.player_one_wins())
-    
-    def test_player_2_has_high_pair(self):
-        hand_1 = Hand(["5H", "5C", "6S", "7S", "KD"])
-        hand_2 = Hand(["2C", "3S", "8S", "8D", "TD"])
-        
-        game = Game(hand_1, hand_2)
-        
-        self.assertTrue(game.player_two_wins())
-        
+class TestGame(unittest.TestCase):            
     def test_two_pair_beats_higher_pair(self):
         hand_1 = Hand(["2S", "2H", "3S", "3H"])
         hand_2 = Hand(["KS", "KH", "6S", "5H"])
@@ -136,73 +112,56 @@ class TestGame(unittest.TestCase):
 
 # TODO: More "tied" tests
 class TestTie(unittest.TestCase):
-    @unittest.skip("TODO: Draw conditions")
-    def test_both_players_have_royal_flush(self):
-        pass
-    
-    def test_one_player_has_smaller_straight_flush(self):
-        hand_1 = Hand(["2H", "3H", "4H", "5H", "6H"])
-        hand_2 = Hand(["3S", "4S", "5S", "6S", "7S"])
-        
-        game = Game(hand_1, hand_2)
-        
-        self.assertTrue(game.player_two_wins())
-    
-    @unittest.skip("Worry about multideck games later...")
-    def test_both_players_have_same_four_of_a_kind(self):
-        pass
-    
-    @unittest.skip("TEMPORARY SKIP")
-    def test_one_player_has_smaller_high_card_in_flush(self):
-        hand_1 = Hand(["2H", "4H", "5H", "6H", "7H"]) 
-        hand_2 = Hand(["2C", "4C", "5C", "6C", "8C"]) 
-        
-        game = Game(hand_1, hand_2)
-        
-        self.assertTrue(game.player_two_wins())
-    
-    @unittest.skip("TEMPORARY SKIP") 
-    def test_one_player_has_smallest_card_in_flush(self):
-        hand_1 = Hand(["9C", "JC", "QC", "KC", "AC"]) 
-        hand_2 = Hand(["8H", "JH", "QH", "KH", "AH"])
+    """Players meet the same win condition, but it's not a draw."""   
+    def test_player_wins_with_high_card(self):
+        hand_1 = Hand(["5D", "8C", "9S", "JS", "AC"])
+        hand_2 = Hand(["2C", "5C", "7D", "8S", "QH"])
         
         game = Game(hand_1, hand_2)
         
         self.assertTrue(game.player_one_wins())
         
-    def test_one_player_has_higher_first_pair_in_two_pair(self):
-        hand_1 = Hand(["3H", "6S", "6C", "7C", "7D"])
-        hand_2 = Hand(["3S", "6H", "6D", "8C", "8D"])
+    def test_player_wins_with_high_pair(self):
+        pair_8 = Hand(["2C", "3S", "8S", "8D", "TD"])
+        pair_5 = Hand(["5H", "5C", "6S", "7S", "KD"])
         
-        game = Game(hand_1, hand_2)
+        game = Game(pair_8, pair_5)
         
-        self.assertTrue(game.player_two_wins())
+        self.assertTrue(game.player_one_wins())
         
-    def test_one_player_has_higher_second_pair_in_two_pair(self):
-        pair_five_and_eight = Hand(["3H", "5S", "5C", "8S", "8H"])
-        pair_six_and_eight = Hand(["3S", "6H", "6H", "8C", "8D"])
+    def test_player_wins_with_higher_first_pair_in_two_pair(self):
+        pairs_6_and_8 = Hand(["3S", "6H", "6D", "8C", "8D"])
+        pairs_6_and_7 = Hand(["3H", "6S", "6C", "7C", "7D"])
         
-        game = Game(pair_five_and_eight, pair_six_and_eight)
+        game = Game(pairs_6_and_8, pairs_6_and_7)
         
-        self.assertTrue(game.player_two_wins())
-    def test_one_player_has_higher_triplet(self):
-        triple_7 = Hand(["3S", "5H", "7H", "7C", "7D"])
+        self.assertTrue(game.player_one_wins())
+        
+    def test_player_wins_with_higher_second_pair_in_two_pair(self):
+        pairs_5_and_8 = Hand(["3H", "5S", "5C", "8S", "8H"])
+        pairs_6_and_8 = Hand(["3S", "6H", "6H", "8C", "8D"])
+        
+        game = Game(pairs_6_and_8, pairs_5_and_8)
+        
+        self.assertTrue(game.player_one_wins())
+    def test_player_wins_with_higher_three_of_a_kind(self):
         triple_8 = Hand(["3H", "5S", "8C", "8S", "8H"])
+        triple_7 = Hand(["3S", "5H", "7H", "7C", "7D"])
         
-        game = Game(triple_7, triple_8)
+        game = Game(triple_8, triple_7)
         
-        self.assertTrue(game.player_two_wins())
+        self.assertTrue(game.player_one_wins())
         
     @unittest.skip("Worry about multideck games later...")
-    def test_one_player_has_triplet_and_high_card(self):
-        triple_7 = Hand(["3S", "7H", "7C", "7D", "AD"])
+    def test_player_wins_with_three_of_a_kind_and_high_card(self):
         triple_8 = Hand(["3H", "7H", "7S", "7D", "KD"])
+        triple_7 = Hand(["3S", "7H", "7C", "7D", "AD"])
         
-        game = Game(triple_7, triple_8)
+        game = Game(triple_8, triple_7)
         
-        self.assertTrue(game.player_two_wins())
+        self.assertTrue(game.player_one_wins())
         
-    def test_one_player_has_higher_straight(self):
+    def test_player_wins_with_higher_straight(self):
         straight_2_6 = Hand(["2S", "3C", "4D", "5H", "6S"])
         straight_3_7 = Hand(["3S", "4C", "5D", "6H", "7S"])
         
@@ -210,11 +169,7 @@ class TestTie(unittest.TestCase):
         
         self.assertTrue(game.player_one_wins())
 
-    @unittest.skip("TODO: Draw conditions")
-    def test_both_players_have_same_straight(self):
-        pass
-
-    def test_player_wins_by_having_bigger_flush(self):
+    def test_player_wins_with_higher_flush(self):
         high_flush = Hand(["AS", "KS", "QS", "JS", "9S"])
         low_flush = Hand(["8S", "7S", "6S", "5S", "3S"])
         
@@ -222,7 +177,7 @@ class TestTie(unittest.TestCase):
         
         self.assertTrue(game.player_one_wins())
         
-    def test_player_wins_by_having_higher_card_in_flush(self):
+    def test_player_wins_with_higher_card_in_flush(self):
         high_flush = Hand(["AS", "KS", "QS", "JS", "9S"])
         low_flush = Hand(["KH", "QH", "JH", "TH", "8H"])
         
@@ -230,22 +185,45 @@ class TestTie(unittest.TestCase):
 
         self.assertTrue(game.player_one_wins())
 
-    def test_one_player_has_smaller_triplet_in_full_house(self):
-        hand_1 = Hand(["2H", "2D", "4C", "4D", "4S"])
-        hand_2 = Hand(["3C", "3D", "3S", "9S", "9D"])
+    def test_player_wins_with_triplet_in_full_house(self):
+        triple_4 = Hand(["2H", "2D", "4C", "4D", "4S"])
+        triple_3 = Hand(["3C", "3D", "3S", "9S", "9D"])
          
-        game = Game(hand_1, hand_2)
+        game = Game(triple_4, triple_3)
          
         self.assertTrue(game.player_one_wins())
     
     @unittest.skip("Worry about multideck games later...")
-    def test_one_player_has_smaller_pair_in_full_house(self):
+    def test_player_wins_with_pair_in_full_house(self):
         hand_1 = Hand(["4C", "4D", "4S", "2H", "2D"])
         hand_2 = Hand(["4C", "4D", "4S", "9S", "9D"])
          
         game = Game(hand_1, hand_2)
          
         self.assertTrue(game.player_two_wins())
+        
+    def test_player_wins_with_higher_four_of_a_kind(self):
+        hand_1 = Hand(["KH", "KS", "KC", "KD", "2H"])
+        hand_2 = Hand(["5H", "5S", "5C", "5D", "QH"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_one_wins())
+        
+    def test_player_wins_with_higher_straight_flush(self):
+        hand_1 = Hand(["3S", "4S", "5S", "6S", "7S"])
+        hand_2 = Hand(["2H", "3H", "4H", "5H", "6H"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_one_wins())
+    
+
+class TestDraw(unittest.TestCase):
+    """Players have effectively the same hand."""
+    @unittest.skip("TODO: Draw conditions")
+    def test_players_have_same_straight(self):
+        pass
     
     @unittest.skip("TODO Multideck draw condition")
     def test_players_have_same_full_house(self):
@@ -255,15 +233,11 @@ class TestTie(unittest.TestCase):
         game = Game(hand_1, hand_2)
         
         print(game)
-        
-    def test_one_player_has_smaller_four_of_a_kind(self):
-        hand_1 = Hand(["KH", "KS", "KC", "KD", "2H"])
-        hand_2 = Hand(["5H", "5S", "5C", "5D", "QH"])
-        
-        game = Game(hand_1, hand_2)
-        
-        self.assertTrue(game.player_one_wins())
     
+    @unittest.skip("TODO: Draw conditions")
+    def test_players_have_royal_flush(self):
+        pass
+
 
 class TestLowCardWins(unittest.TestCase):
     """Hands are nearly identical except for lowest card."""
@@ -308,7 +282,7 @@ class TestLowCardWins(unittest.TestCase):
 
         self.assertTrue(game.player_one_wins())
     
-    @unittest.skip("")
+    @unittest.skip("Worry about multideck games later...")
     def test_four_of_a_kind_wins_on_low_card(self):
         hand_1 = Hand(["KH", "KS", "KC", "KD", "QH"])
         hand_2 = Hand(["KH", "KS", "KC", "KD", "2H"])
