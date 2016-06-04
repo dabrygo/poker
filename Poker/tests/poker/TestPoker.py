@@ -268,7 +268,7 @@ class TestTie(unittest.TestCase):
 
 class TestLowCardWins(unittest.TestCase):
     """Hands are nearly identical except for lowest card."""
-    def test_high_card_hand_wins_on_low_card(self):
+    def test_high_card_wins_on_low_card(self):
         hand_1 = Hand(["2S", "5H", "6D", "7C", "8C"])
         hand_2 = Hand(["3H", "5S", "6C", "7D", "8D"])
         
@@ -276,7 +276,7 @@ class TestLowCardWins(unittest.TestCase):
         
         self.assertTrue(game.player_two_wins())
         
-    def test_pair_hand_wins_on_low_card(self):
+    def test_pair_wins_on_low_card(self):
         hand_1 = Hand(["2S", "5H", "6D", "7C", "7S"])
         hand_2 = Hand(["3H", "5S", "6C", "7D", "7H"])
         
@@ -284,7 +284,7 @@ class TestLowCardWins(unittest.TestCase):
         
         self.assertTrue(game.player_two_wins())
         
-    def test_two_pair_hand_wins_on_low_card(self):
+    def test_two_pair_wins_on_low_card(self):
         hand_1 = Hand(["2S", "6H", "6D", "7C", "7S"])
         hand_2 = Hand(["3H", "6S", "6C", "7D", "7H"])
                 
@@ -300,4 +300,12 @@ class TestLowCardWins(unittest.TestCase):
         game = Game(hand_1, hand_2)
         
         self.assertTrue(game.player_two_wins())
+        
+    def test_flush_wins_on_low_card(self):
+        high_flush = Hand(["AS", "KS", "QS", "JS", "9S"])
+        low_flush = Hand(["AH", "KH", "QH", "JH", "8H"])
+        
+        game = Game(high_flush, low_flush)
+
+        self.assertTrue(game.player_one_wins())
         
