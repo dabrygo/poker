@@ -5,7 +5,7 @@ Created on Jun 3, 2016
 '''
 import unittest
 
-from poker.Poker import Hand 
+from poker.Poker import Hand, Card 
 from poker.WinPatterns import HighCard, Pair, TwoPair, ThreeOfAKind, Straight, Flush, FullHouse, FourOfAKind, StraightFlush, RoyalFlush
 
 class TestHighCard(unittest.TestCase):
@@ -16,6 +16,13 @@ class TestHighCard(unittest.TestCase):
     def test_ace_high(self):
         good_hand = Hand(["AD", "KD", "QD", "JD", "TD"])
         self.assertEqual("A", HighCard(good_hand).values()[0])
+        
+    def test_ace_trumps_king(self):
+        ace = HighCard(Hand(["AD"]))
+        king = HighCard(Hand(["KD"]))
+        
+        self.assertTrue(Card("AD"), ace.values())
+        self.assertTrue(ace.trumps(king))
 
 
 class TestPair(unittest.TestCase):    

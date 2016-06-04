@@ -204,3 +204,18 @@ class TestTie(unittest.TestCase):
         game = Game(hand_1, hand_2)
         
         self.assertTrue(game.player_one_wins())
+    def test_nearly_identical_high_card_hands(self):
+        hand_1 = Hand(["2S", "5H", "6D", "7C", "8C"])
+        hand_2 = Hand(["3H", "5S", "6C", "7D", "8D"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_two_wins())
+        
+    def test_nearly_identical_pair_hands(self):
+        hand_1 = Hand(["2S", "5H", "6D", "7C", "7S"])
+        hand_2 = Hand(["3H", "5S", "6C", "7D", "7H"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_two_wins())

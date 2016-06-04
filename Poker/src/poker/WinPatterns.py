@@ -23,6 +23,9 @@ class WinPattern:
     def has_n(self, card, n):
         return self.ranks.count(card.rank) == n
     
+    def trumps(self, other):
+        pass
+    
 
 class HighCard(WinPattern):
     """The highest-ranking card in a hand."""
@@ -34,7 +37,15 @@ class HighCard(WinPattern):
     
     def values(self):
         sort_by_rank = sorted(self.cards, reverse=True)
-        return [sort_by_rank[0].rank]
+        return sort_by_rank[0].rank
+    
+    def trumps(self, other):
+        sort_by_rank = sorted(self.cards, reverse=True)
+        other_sort_by_rank = sorted(other.cards, reverse=True)
+        for i, card in enumerate(sort_by_rank):
+            if card < other_sort_by_rank[i]:
+                return False
+        return True  
    
           
 class Pair(WinPattern):
@@ -47,6 +58,20 @@ class Pair(WinPattern):
     
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
+    
+    def trumps(self, other):
+        pair_number = self.values()[0]
+        other_pair_number = other.values()[0]
+        if Straight.ranks.index(pair_number) > Straight.ranks.index(other_pair_number):
+            return True
+        if Straight.ranks.index(pair_number) < Straight.ranks.index(other_pair_number):
+            return False
+        sort_by_rank = sorted(self.cards, reverse=True)
+        other_sort_by_rank = sorted(other.cards, reverse=True)
+        for i, card in enumerate(sort_by_rank):
+            if card < other_sort_by_rank[i]:
+                return False
+        return True  
 
 
 class TwoPair(WinPattern):
