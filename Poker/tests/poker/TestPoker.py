@@ -83,7 +83,6 @@ class TestHand(unittest.TestCase):
         self.assertEqual(9, hand.score())
 
 
-
 class TestGame(unittest.TestCase):            
     def test_two_pair_beats_higher_pair(self):
         hand_1 = Hand(["2S", "2H", "3S", "3H"])
@@ -92,22 +91,6 @@ class TestGame(unittest.TestCase):
         game = Game(hand_1, hand_2)
         
         self.assertTrue(game.player_one_wins())
-    
-    def test_pair_jacks_beats_pair_tens(self):
-        hand_1 = Hand(["TH", "8H", "5C", "QS", "TC"])
-        hand_2 = Hand(["9H", "4D", "JC", "KS", "JS"])
-         
-        game = Game(hand_1, hand_2)
-         
-        self.assertTrue(game.player_two_wins())
-
-    def test_three_of_a_kind_beats_two_pair(self):
-        hand_1 = Hand(["2S", "2D", "2H", "3S", "4D"])
-        hand_2 = Hand(["AS", "AD", "KH", "KS", "QD"])
-        
-        game = Game(hand_1, hand_2)
-        
-        self.assertTrue(game.player_one_wins)
                       
 
 # TODO: More "tied" tests
