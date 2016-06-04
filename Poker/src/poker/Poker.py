@@ -76,8 +76,8 @@ class WinPattern:
 
 class HighCard(WinPattern):
     def __init__(self, hand):
-        self.cards = hand.cards
-    
+        super().__init__(hand)
+            
     def criterion(self):
         return True
     
@@ -398,14 +398,51 @@ class Hand:
     
 
 class HandTest(unittest.TestCase):
-    def setUp(self):
-        self.hand = Hand(["5H", "5C", "6S", "7S", "KD"])
-        
     def test_sort_hand(self):
-        self.hand.sort_hand()
-        self.assertEqual("K", self.hand.cards[0].rank)
+        hand = Hand(["5H", "5C", "6S", "7S", "KD"])
+        hand.sort_hand()
+        self.assertEqual("K", hand.cards[0].rank)
     
-    # TODO Test each win pattern   
+    # TODO Test each win pattern
+    def test_royal_flush(self):
+        hand = Hand(["JH", "KH", "TH", "AH", "QH"])
+        self.assertEqual(RoyalFlush.score(), hand.win_pattern().score())
+      
+    def test_straight_flush(self):
+        hand = Hand(["JH", "8H", "TH", "9H", "7H"])
+        self.assertEqual(StraightFlush.score(), hand.win_pattern().score())
+        
+    def test_four_of_a_kind(self):
+        hand = Hand(["JH", "7H", "7D", "7C", "7S"])
+        self.assertEqual(FourOfAKind.score(), hand.win_pattern().score())
+
+    def test_full_house(self):
+        hand = Hand(["5H", "5S", "7D", "7C", "7S"])
+        self.assertEqual(FullHouse.score(), hand.win_pattern().score())
+
+    def test_flush(self):
+        hand = Hand(["TH", "7H", "2H", "KH", "3H"])
+        self.assertEqual(Flush.score(), hand.win_pattern().score())
+        
+    def test_straight(self):
+        hand = Hand(["6H", "3S", "4H", "2C", "5H"])
+        self.assertEqual(Straight.score(), hand.win_pattern().score())
+        
+    def test_three_of_a_kind(self):
+        hand = Hand(["6C", "KD", "3H", "3S", "3D"])
+        self.assertEqual(ThreeOfAKind.score(), hand.win_pattern().score())
+        
+    def test_two_pair(self):
+        hand = Hand(["6C", "KD", "6H", "3S", "3D"])
+        self.assertEqual(TwoPair.score(), hand.win_pattern().score())
+        
+    def test_pair(self):
+        hand = Hand(["6C", "KD", "6H", "7S", "3D"])
+        self.assertEqual(Pair.score(), hand.win_pattern().score())
+        
+    def test_high_card(self):
+        hand = Hand(["6C", "KD", "9H", "7S", "3D"])
+        self.assertEqual(HighCard.score(), hand.win_pattern().score())
 
 # TODO: More "tied" tests
 class Game:
