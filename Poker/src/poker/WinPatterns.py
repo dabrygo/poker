@@ -3,6 +3,7 @@ Created on Jun 3, 2016
 
 @author: dbgod
 '''
+from pygments.lexers import other
 
 ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
@@ -220,6 +221,25 @@ class FullHouse(WinPattern):
         # the triplet's rank comes first and the pair's 
         # rank second
         return [ThreeOfAKind(self).values()[0], Pair(self).values()[0]]
+    
+    def trumps(self, other):
+        triplet = ThreeOfAKind(self).values()[0]
+        other_triplet = ThreeOfAKind(other).values()[0]
+
+        if ranks.index(triplet) < ranks.index(other_triplet):
+            return False
+        elif ranks.index(triplet) > ranks.index(other_triplet):
+            return True
+        else:
+            pair = Pair(self).values()[0]
+            other_pair = Pair(self).values()[0]
+            if ranks.index(pair) < ranks.index(other_pair):
+                return False
+            elif ranks.index(pair) > ranks.index(other_pair):
+                return True
+            else:
+                # Draw
+                raise NotImplementedError
 
 
 class FourOfAKind(WinPattern):

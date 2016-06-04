@@ -160,33 +160,6 @@ class TestTie(unittest.TestCase):
     def test_both_players_have_same_four_of_a_kind(self):
         pass
     
-    @unittest.skip("FIXME")
-    def test_one_player_has_smaller_triplet_in_full_house(self):
-        hand_1 = Hand(["2H", "2D", "4C", "4D", "4S"])
-        hand_2 = Hand(["3C", "3D", "3S", "9S", "9D"])
-         
-        game = Game(hand_1, hand_2)
-         
-        self.assertTrue(game.player_one_wins())
-    
-    @unittest.skip("Worry about multideck games later...")
-    def test_one_player_has_smaller_pair_in_full_house(self):
-        hand_1 = Hand(["4C", "4D", "4S", "2H", "2D"])
-        hand_2 = Hand(["4C", "4D", "4S", "9S", "9D"])
-         
-        game = Game(hand_1, hand_2)
-         
-        self.assertTrue(game.player_two_wins())
-    
-    @unittest.skip("TODO Multideck draw condition")
-    def test_players_have_same_full_house(self):
-        hand_1 = Hand(["4C", "4D", "4S", "2H", "2D"])
-        hand_2 = Hand(["4C", "4D", "4S", "2S", "2C"])
-        
-        game = Game(hand_1, hand_2)
-        
-        print(game)
-    
     @unittest.skip("TEMPORARY SKIP")
     def test_one_player_has_smaller_high_card_in_flush(self):
         hand_1 = Hand(["2H", "4H", "5H", "6H", "7H"]) 
@@ -265,6 +238,32 @@ class TestTie(unittest.TestCase):
 
         self.assertTrue(game.player_one_wins())
 
+    def test_one_player_has_smaller_triplet_in_full_house(self):
+        hand_1 = Hand(["2H", "2D", "4C", "4D", "4S"])
+        hand_2 = Hand(["3C", "3D", "3S", "9S", "9D"])
+         
+        game = Game(hand_1, hand_2)
+         
+        self.assertTrue(game.player_one_wins())
+    
+    @unittest.skip("Worry about multideck games later...")
+    def test_one_player_has_smaller_pair_in_full_house(self):
+        hand_1 = Hand(["4C", "4D", "4S", "2H", "2D"])
+        hand_2 = Hand(["4C", "4D", "4S", "9S", "9D"])
+         
+        game = Game(hand_1, hand_2)
+         
+        self.assertTrue(game.player_two_wins())
+    
+    @unittest.skip("TODO Multideck draw condition")
+    def test_players_have_same_full_house(self):
+        hand_1 = Hand(["4C", "4D", "4S", "2H", "2D"])
+        hand_2 = Hand(["4C", "4D", "4S", "2S", "2C"])
+        
+        game = Game(hand_1, hand_2)
+        
+        print(game)
+        
 
 class TestLowCardWins(unittest.TestCase):
     """Hands are nearly identical except for lowest card."""
