@@ -214,12 +214,29 @@ class TestTie(unittest.TestCase):
         self.assertTrue(game.player_two_wins())
         
     def test_one_player_has_higher_second_pair_in_two_pair(self):
-        hand_1 = Hand(["3H", "5S", "5C", "8S", "8H"])
-        hand_2 = Hand(["3S", "6H", "6H", "8C", "8D"])
+        pair_five_and_eight = Hand(["3H", "5S", "5C", "8S", "8H"])
+        pair_six_and_eight = Hand(["3S", "6H", "6H", "8C", "8D"])
         
-        game = Game(hand_1, hand_2)
+        game = Game(pair_five_and_eight, pair_six_and_eight)
         
         self.assertTrue(game.player_two_wins())
+    def test_one_player_has_higher_triplet(self):
+        triple_7 = Hand(["3S", "5H", "7H", "7C", "7D"])
+        triple_8 = Hand(["3H", "5S", "8C", "8S", "8H"])
+        
+        game = Game(triple_7, triple_8)
+        
+        self.assertTrue(game.player_two_wins())
+        
+    @unittest.skip("Worry about multideck games later...")
+    def test_one_player_has_triplet_and_high_card(self):
+        triple_7 = Hand(["3S", "7H", "7C", "7D", "AD"])
+        triple_8 = Hand(["3H", "7H", "7S", "7D", "KD"])
+        
+        game = Game(triple_7, triple_8)
+        
+        self.assertTrue(game.player_two_wins())
+
 
 class TestLowCardWins(unittest.TestCase):
     """Hands are nearly identical except for lowest card."""
@@ -246,3 +263,13 @@ class TestLowCardWins(unittest.TestCase):
         game = Game(hand_1, hand_2)
         
         self.assertTrue(game.player_two_wins())
+    
+    @unittest.skip("Worry about multideck games later...")
+    def test_three_of_a_kind_wins_on_low_card(self):
+        hand_1 = Hand(["2S", "5H", "7H", "7C", "7D"])
+        hand_2 = Hand(["3H", "5S", "7H", "7C", "7D"])        
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_two_wins())
+        

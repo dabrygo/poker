@@ -118,7 +118,28 @@ class ThreeOfAKind(WinPattern):
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 3)])))
 
-              
+    def trumps(self, other):
+        # compare pairs
+        triplet_ranks = self.values()
+        other_triplet_ranks = other.values()
+        for i, rank in enumerate(triplet_ranks):
+            if Straight.ranks.index(rank) == Straight.ranks.index(other_triplet_ranks[i]):
+                continue
+            if Straight.ranks.index(rank) > Straight.ranks.index(other_triplet_ranks[i]):
+                return True
+            if Straight.ranks.index(rank) < Straight.ranks.index(other_triplet_ranks[i]):
+                return False
+        # compare all cards (the pairs have already been
+        # compared, so comparing again shouldn't hurt 
+        # anything)
+        sort_by_rank = sorted(self.cards, reverse=True)
+        other_sort_by_rank = sorted(other.cards, reverse=True)
+        for i, card in enumerate(sort_by_rank):
+            if card < other_sort_by_rank[i]:
+                return False
+        return True  
+
+
 class Straight(WinPattern):
     """A hand has five cards whose ranks are consecutive."""
     # TODO Move ranks to someplace accessible to poker.Poker.Card
