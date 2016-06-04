@@ -60,11 +60,11 @@ class Pair(WinPattern):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
     
     def trumps(self, other):
-        pair_number = self.values()[0]
-        other_pair_number = other.values()[0]
-        if Straight.ranks.index(pair_number) > Straight.ranks.index(other_pair_number):
+        pair_rank = self.values()[0]
+        other_pair_rank = other.values()[0]
+        if Straight.ranks.index(pair_rank) > Straight.ranks.index(other_pair_rank):
             return True
-        if Straight.ranks.index(pair_number) < Straight.ranks.index(other_pair_number):
+        if Straight.ranks.index(pair_rank) < Straight.ranks.index(other_pair_rank):
             return False
         sort_by_rank = sorted(self.cards, reverse=True)
         other_sort_by_rank = sorted(other.cards, reverse=True)
@@ -84,6 +84,27 @@ class TwoPair(WinPattern):
     
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
+    
+    def trumps(self, other):
+        # compare pairs
+        pair_ranks = self.values()
+        other_pair_ranks = other.values()
+        for i, rank in enumerate(pair_ranks):
+            if Straight.ranks.index(rank) == Straight.ranks.index(other_pair_ranks[i]):
+                continue
+            if Straight.ranks.index(rank) > Straight.ranks.index(other_pair_ranks[i]):
+                return True
+            if Straight.ranks.index(rank) < Straight.ranks.index(other_pair_ranks[i]):
+                return False
+        # compare all cards (the pairs have already been
+        # compared, so comparing again shouldn't hurt 
+        # anything)
+        sort_by_rank = sorted(self.cards, reverse=True)
+        other_sort_by_rank = sorted(other.cards, reverse=True)
+        for i, card in enumerate(sort_by_rank):
+            if card < other_sort_by_rank[i]:
+                return False
+        return True  
     
         
 class ThreeOfAKind(WinPattern):

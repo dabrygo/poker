@@ -203,8 +203,27 @@ class TestTie(unittest.TestCase):
         
         game = Game(hand_1, hand_2)
         
-        self.assertTrue(game.player_one_wins())
-    def test_nearly_identical_high_card_hands(self):
+        self.assertTrue(game.player_one_wins())
+        
+    def test_one_player_has_higher_first_pair_in_two_pair(self):
+        hand_1 = Hand(["3H", "6S", "6C", "7C", "7D"])
+        hand_2 = Hand(["3S", "6H", "6D", "8C", "8D"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_two_wins())
+        
+    def test_one_player_has_higher_second_pair_in_two_pair(self):
+        hand_1 = Hand(["3H", "5S", "5C", "8S", "8H"])
+        hand_2 = Hand(["3S", "6H", "6H", "8C", "8D"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_two_wins())
+
+class TestLowCardWins(unittest.TestCase):
+    """Hands are nearly identical except for lowest card."""
+    def test_high_card_hand_wins_on_low_card(self):
         hand_1 = Hand(["2S", "5H", "6D", "7C", "8C"])
         hand_2 = Hand(["3H", "5S", "6C", "7D", "8D"])
         
@@ -212,10 +231,18 @@ class TestTie(unittest.TestCase):
         
         self.assertTrue(game.player_two_wins())
         
-    def test_nearly_identical_pair_hands(self):
+    def test_pair_hand_wins_on_low_card(self):
         hand_1 = Hand(["2S", "5H", "6D", "7C", "7S"])
         hand_2 = Hand(["3H", "5S", "6C", "7D", "7H"])
         
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_two_wins())
+        
+    def test_two_pair_hand_wins_on_low_card(self):
+        hand_1 = Hand(["2S", "6H", "6D", "7C", "7S"])
+        hand_2 = Hand(["3H", "6S", "6C", "7D", "7H"])
+                
         game = Game(hand_1, hand_2)
         
         self.assertTrue(game.player_two_wins())
