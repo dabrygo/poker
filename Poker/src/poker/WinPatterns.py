@@ -4,6 +4,8 @@ Created on Jun 3, 2016
 @author: dbgod
 '''
 
+ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+
 class WinPattern:
     """"""
     def __init__(self, hand):
@@ -62,9 +64,9 @@ class Pair(WinPattern):
     def trumps(self, other):
         pair_rank = self.values()[0]
         other_pair_rank = other.values()[0]
-        if Straight.ranks.index(pair_rank) > Straight.ranks.index(other_pair_rank):
+        if ranks.index(pair_rank) > ranks.index(other_pair_rank):
             return True
-        if Straight.ranks.index(pair_rank) < Straight.ranks.index(other_pair_rank):
+        if ranks.index(pair_rank) < ranks.index(other_pair_rank):
             return False
         sort_by_rank = sorted(self.cards, reverse=True)
         other_sort_by_rank = sorted(other.cards, reverse=True)
@@ -90,11 +92,11 @@ class TwoPair(WinPattern):
         pair_ranks = self.values()
         other_pair_ranks = other.values()
         for i, rank in enumerate(pair_ranks):
-            if Straight.ranks.index(rank) == Straight.ranks.index(other_pair_ranks[i]):
+            if ranks.index(rank) == ranks.index(other_pair_ranks[i]):
                 continue
-            if Straight.ranks.index(rank) > Straight.ranks.index(other_pair_ranks[i]):
+            if ranks.index(rank) > ranks.index(other_pair_ranks[i]):
                 return True
-            if Straight.ranks.index(rank) < Straight.ranks.index(other_pair_ranks[i]):
+            if ranks.index(rank) < ranks.index(other_pair_ranks[i]):
                 return False
         # compare all cards (the pairs have already been
         # compared, so comparing again shouldn't hurt 
@@ -123,11 +125,11 @@ class ThreeOfAKind(WinPattern):
         triplet_ranks = self.values()
         other_triplet_ranks = other.values()
         for i, rank in enumerate(triplet_ranks):
-            if Straight.ranks.index(rank) == Straight.ranks.index(other_triplet_ranks[i]):
+            if ranks.index(rank) == ranks.index(other_triplet_ranks[i]):
                 continue
-            if Straight.ranks.index(rank) > Straight.ranks.index(other_triplet_ranks[i]):
+            if ranks.index(rank) > ranks.index(other_triplet_ranks[i]):
                 return True
-            if Straight.ranks.index(rank) < Straight.ranks.index(other_triplet_ranks[i]):
+            if ranks.index(rank) < ranks.index(other_triplet_ranks[i]):
                 return False
         # compare all cards (the pairs have already been
         # compared, so comparing again shouldn't hurt 
@@ -144,19 +146,25 @@ class Straight(WinPattern):
     """A hand has five cards whose ranks are consecutive."""
     # TODO Move ranks to someplace accessible to poker.Poker.Card
     #      and here
-    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 
-         'T', 'J', 'Q', 'K', 'A']
     def __init__(self, hand):
         super().__init__(hand)
     
     def criterion(self):
         self.cards = sorted(self.cards, reverse=False)
-        start_index = Straight.ranks.index(self.cards[0].rank)
+        start_index = ranks.index(self.cards[0].rank)
         for i in range(5):
-            if self.cards[i].rank != Straight.ranks[start_index + i]:
+            if self.cards[i].rank != ranks[start_index + i]:
                 return False
         return True
-  
+    
+    def trumps(self, other):
+        sort_by_rank = sorted(self.cards, reverse=True)
+        other_sort_by_rank = sorted(other.cards, reverse=True)
+        for i, card in enumerate(sort_by_rank):
+            if card < other_sort_by_rank[i]:
+                return False
+        return True  
+      
 
 class Flush(WinPattern):
     """A hand has cards of only one suit."""
@@ -221,6 +229,7 @@ class RoyalFlush(WinPattern):
 
 order = [RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush,
          Straight, ThreeOfAKind, TwoPair, Pair, HighCard]
+
 
 if __name__ == "__main__":
     import unittest

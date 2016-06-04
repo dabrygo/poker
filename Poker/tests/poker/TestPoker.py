@@ -236,6 +236,18 @@ class TestTie(unittest.TestCase):
         game = Game(triple_7, triple_8)
         
         self.assertTrue(game.player_two_wins())
+        
+    def test_one_player_has_higher_straight(self):
+        straight_2_6 = Hand(["2S", "3C", "4D", "5H", "6S"])
+        straight_3_7 = Hand(["3S", "4C", "5D", "6H", "7S"])
+        
+        game = Game(straight_3_7, straight_2_6)
+        
+        self.assertTrue(game.player_one_wins())
+
+    @unittest.skip("TODO: Draw conditions")
+    def test_both_players_have_same_straight(self):
+        pass
 
 
 class TestLowCardWins(unittest.TestCase):
