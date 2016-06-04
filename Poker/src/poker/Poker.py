@@ -23,7 +23,7 @@ class Card:
         return self.rank + self.suit
         
         
-class CardTest(unittest.TestCase):
+class TestCard(unittest.TestCase):
     
     def test_card(self):
         card = Card("AS")
@@ -61,10 +61,6 @@ class WinPattern:
         """What it takes to win with this pattern."""
         pass
     
-    def score(self):
-        """The ranking of this pattern to others."""
-        pass
-    
     # TODO: Make property?
     def values(self):
         """A list ranks of the cards involved, highest first."""
@@ -84,10 +80,6 @@ class HighCard(WinPattern):
     def values(self):
         sort_by_rank = sorted(self.cards, reverse=True)
         return [sort_by_rank[0].rank]
-    
-    @staticmethod
-    def score():
-        return 0
    
    
 class TestHighCard(unittest.TestCase):
@@ -110,10 +102,6 @@ class Pair(WinPattern):
     
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
-    
-    @staticmethod
-    def score():
-        return 1
 
 
 class TestPair(unittest.TestCase):    
@@ -140,10 +128,6 @@ class TwoPair(WinPattern):
     
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
-    
-    @staticmethod
-    def score():
-        return 2
 
 
 class TestTwoPair(unittest.TestCase):    
@@ -170,10 +154,6 @@ class ThreeOfAKind(WinPattern):
     
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 3)])))
-    
-    @staticmethod
-    def score():
-        return 3
 
 
 class TestThreeOfAKind(unittest.TestCase):    
@@ -207,10 +187,6 @@ class Straight(WinPattern):
                 return False
         return True
     
-    @staticmethod
-    def score():
-        return 4
-
 
 class TestStraight(unittest.TestCase):
     def test_small_straight(self):
@@ -234,10 +210,6 @@ class Flush(WinPattern):
     def criterion(self):
         return len(set([card.suit for card in self.cards])) == 1
     
-    @staticmethod
-    def score():
-        return 5    
-    
 
 class TestFlush(unittest.TestCase):
     def test_is_a_flush(self):
@@ -257,9 +229,10 @@ class FullHouse(WinPattern):
     def criterion(self):
         return Pair(self).criterion() and ThreeOfAKind(self).criterion()
 
-    @staticmethod
-    def score():
-        return 6
+    def values(self):
+        # As a convention, the triple number comes first
+        # and the pair number second
+        return [ThreeOfAKind(self).values()[0], Pair(self).values()[0]]
 
 
 class TestFullHouse(unittest.TestCase):
@@ -274,6 +247,10 @@ class TestFullHouse(unittest.TestCase):
     def test_suits_do_not_make_a_full_house(self):
         suit_house = Hand(["2S", "4S", "7H", "6H", "8H"])
         self.assertFalse(FullHouse(suit_house).criterion())
+        
+    def test_value_full_house(self):
+        hand = Hand(["4C", "2H", "2D", "4D", "4S"])
+        self.assertEqual(["4", "2"], FullHouse(hand).values())
 
 
 class FourOfAKind(WinPattern):
@@ -286,10 +263,6 @@ class FourOfAKind(WinPattern):
     
     def values(self):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 4)])))
-    
-    @staticmethod
-    def score():
-        return 7
 
 
 class TestFourOfAKind(unittest.TestCase):    
@@ -318,9 +291,8 @@ class StraightFlush(WinPattern):
     def criterion(self):
         return Straight(self).criterion() and Flush(self).criterion()
     
-    @staticmethod
-    def score():
-        return 8
+    def values(self):
+        return sorted([card.rank for card in self.cards])
     
 
 class TestStraightFlush(unittest.TestCase):
@@ -336,6 +308,10 @@ class TestStraightFlush(unittest.TestCase):
         hand = Hand(["2S", "3S", "4S", "5S", "7S"])
         self.assertFalse(StraightFlush(hand).criterion())
         
+    def test_straight_flush_values(self):
+        hand = Hand(["7H", "5H", "8H", "4H", "6H"])
+        self.assertEqual(["4", "5", "6", "7", "8"], StraightFlush(hand).values())
+        
 
 class RoyalFlush(WinPattern):
     """A hand has the highest consecutive cards of the same suit"""
@@ -345,9 +321,9 @@ class RoyalFlush(WinPattern):
     def criterion(self):
         return StraightFlush(self).criterion() and HighCard(self).values()[0] == "A" 
     
-    @staticmethod
-    def score():
-        return 9
+    # TODO How to handle RoyalFlush tie?
+    def values(self):
+        pass
 
 
 class TestRoyalFlush(unittest.TestCase):
@@ -365,9 +341,10 @@ class TestRoyalFlush(unittest.TestCase):
         
 
 class Hand:
+    """An unordered collection of cards."""
     order = [RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush,
              Straight, ThreeOfAKind, TwoPair, Pair, HighCard]
-    """An unordered collection of cards."""
+    
     def __init__(self, card_strings):
         self.cards = [Card(card) for card in card_strings]
     
@@ -378,57 +355,60 @@ class Hand:
         for pattern in Hand.order:
             if pattern(self).criterion():
                 return pattern(self)
+            
+    def score(self):
+        return Hand.order.index(self.win_pattern().__class__)
     
     def __str__(self):
         return ' '.join(str(card) for card in self.cards)
     
 
-class HandTest(unittest.TestCase):
+class TestHand(unittest.TestCase):
+    
     def test_sort_hand(self):
         hand = Hand(["5H", "5C", "6S", "7S", "KD"])
         hand.sort_hand()
         self.assertEqual("K", hand.cards[0].rank)
-    
-    # TODO Test each win pattern
+        
     def test_royal_flush(self):
         hand = Hand(["JH", "KH", "TH", "AH", "QH"])
-        self.assertEqual(RoyalFlush.score(), hand.win_pattern().score())
+        self.assertEqual(0, hand.score())
       
     def test_straight_flush(self):
         hand = Hand(["JH", "8H", "TH", "9H", "7H"])
-        self.assertEqual(StraightFlush.score(), hand.win_pattern().score())
+        self.assertEqual(1, hand.score())
         
     def test_four_of_a_kind(self):
         hand = Hand(["JH", "7H", "7D", "7C", "7S"])
-        self.assertEqual(FourOfAKind.score(), hand.win_pattern().score())
+        self.assertEqual(2, hand.score())
 
     def test_full_house(self):
         hand = Hand(["5H", "5S", "7D", "7C", "7S"])
-        self.assertEqual(FullHouse.score(), hand.win_pattern().score())
+        self.assertEqual(3, hand.score())
 
     def test_flush(self):
         hand = Hand(["TH", "7H", "2H", "KH", "3H"])
-        self.assertEqual(Flush.score(), hand.win_pattern().score())
+        self.assertEqual(4, hand.score())
         
     def test_straight(self):
         hand = Hand(["6H", "3S", "4H", "2C", "5H"])
-        self.assertEqual(Straight.score(), hand.win_pattern().score())
+        self.assertEqual(5, hand.score())
         
     def test_three_of_a_kind(self):
         hand = Hand(["6C", "KD", "3H", "3S", "3D"])
-        self.assertEqual(ThreeOfAKind.score(), hand.win_pattern().score())
+        self.assertEqual(6, hand.score())
         
     def test_two_pair(self):
         hand = Hand(["6C", "KD", "6H", "3S", "3D"])
-        self.assertEqual(TwoPair.score(), hand.win_pattern().score())
+        self.assertEqual(7, hand.score())
         
     def test_pair(self):
         hand = Hand(["6C", "KD", "6H", "7S", "3D"])
-        self.assertEqual(Pair.score(), hand.win_pattern().score())
+        self.assertEqual(8, hand.score())
         
     def test_high_card(self):
         hand = Hand(["6C", "KD", "9H", "7S", "3D"])
-        self.assertEqual(HighCard.score(), hand.win_pattern().score())
+        self.assertEqual(9, hand.score())
 
 # TODO: More "tied" tests
 class Game:
@@ -440,10 +420,10 @@ class Game:
         self.hand_2 = hand_2
     
     def player_one_has_a_better_win_pattern(self):
-        return self.hand_1.win_pattern().score() > self.hand_2.win_pattern().score()
+        return self.hand_1.score() < self.hand_2.score()
 
     def break_tie(self):
-        return self.hand_1.win_pattern().score() == self.hand_2.win_pattern().score()
+        return self.hand_1.score() == self.hand_2.score()
 
     def player_one_wins(self):
         if self.player_one_has_a_better_win_pattern():
@@ -460,7 +440,7 @@ class Game:
         return not self.player_one_wins()
     
 
-class GameTest(unittest.TestCase):
+class TestGame(unittest.TestCase):
     
     def test_pair_eight_beats_pair_five(self):
         eights = Hand(["8S", "8D"])
@@ -510,7 +490,32 @@ class GameTest(unittest.TestCase):
         
         self.assertTrue(game.player_one_wins)
                       
+
+class TestTie(unittest.TestCase):
+    
+    def test_one_player_has_smaller_straight_flush(self):
+        hand_1 = Hand(["2H", "3H", "4H", "5H", "6H"])
+        hand_2 = Hand(["3S", "4S", "5S", "6S", "7S"])
         
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_two_wins())
+        
+    def test_one_player_has_smaller_four_of_a_kind(self):
+        hand_1 = Hand(["5H", "5S", "5C", "5D", "QH"])
+        hand_2 = Hand(["KH", "KS", "KC", "KD", "2H"])
+        
+        game = Game(hand_1, hand_2)
+        
+        self.assertTrue(game.player_two_wins())
+    
+#     def test_one_player_has_smaller_triplet_in_full_house(self):
+#         hand_1 = Hand(["2H", "2D", "4C", "4D", "4S"])
+#         hand_2 = Hand(["3C", "3D", "3S", "9S", "9D"])
+#         
+#         game = Game(hand_1, hand_2)
+#         
+#         self.assertTrue(game.player_one_wins())
 # if __name__ == "__main__":
 #     with open("../../TestResources/hands.txt", 'r') as f:
 #         for i in range(5):
