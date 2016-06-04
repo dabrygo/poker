@@ -249,6 +249,22 @@ class TestTie(unittest.TestCase):
     def test_both_players_have_same_straight(self):
         pass
 
+    def test_player_wins_by_having_bigger_flush(self):
+        high_flush = Hand(["AS", "KS", "QS", "JS", "9S"])
+        low_flush = Hand(["8S", "7S", "6S", "5S", "3S"])
+        
+        game = Game(high_flush, low_flush)
+        
+        self.assertTrue(game.player_one_wins())
+        
+    def test_player_wins_by_having_higher_card_in_flush(self):
+        high_flush = Hand(["AS", "KS", "QS", "JS", "9S"])
+        low_flush = Hand(["KH", "QH", "JH", "TH", "8H"])
+        
+        game = Game(high_flush, low_flush)
+
+        self.assertTrue(game.player_one_wins())
+
 
 class TestLowCardWins(unittest.TestCase):
     """Hands are nearly identical except for lowest card."""

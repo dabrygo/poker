@@ -47,7 +47,11 @@ class HighCard(WinPattern):
         for i, card in enumerate(sort_by_rank):
             if card < other_sort_by_rank[i]:
                 return False
-        return True  
+            elif card == other_sort_by_rank[i]:
+                continue
+            else:
+                return True
+        raise NotImplementedError  
    
           
 class Pair(WinPattern):
@@ -73,7 +77,11 @@ class Pair(WinPattern):
         for i, card in enumerate(sort_by_rank):
             if card < other_sort_by_rank[i]:
                 return False
-        return True  
+            elif card == other_sort_by_rank[i]:
+                continue
+            else:
+                return True
+        raise NotImplementedError  
 
 
 class TwoPair(WinPattern):
@@ -106,7 +114,11 @@ class TwoPair(WinPattern):
         for i, card in enumerate(sort_by_rank):
             if card < other_sort_by_rank[i]:
                 return False
-        return True  
+            elif card == other_sort_by_rank[i]:
+                continue
+            else:
+                return True
+        raise NotImplementedError  
     
         
 class ThreeOfAKind(WinPattern):
@@ -139,7 +151,11 @@ class ThreeOfAKind(WinPattern):
         for i, card in enumerate(sort_by_rank):
             if card < other_sort_by_rank[i]:
                 return False
-        return True  
+            elif card == other_sort_by_rank[i]:
+                continue
+            else:
+                return True
+        raise NotImplementedError  
 
 
 class Straight(WinPattern):
@@ -163,7 +179,11 @@ class Straight(WinPattern):
         for i, card in enumerate(sort_by_rank):
             if card < other_sort_by_rank[i]:
                 return False
-        return True  
+            elif card == other_sort_by_rank[i]:
+                continue
+            else:
+                return True
+        raise NotImplementedError  
       
 
 class Flush(WinPattern):
@@ -173,6 +193,18 @@ class Flush(WinPattern):
         
     def criterion(self):
         return len(set([card.suit for card in self.cards])) == 1
+    
+    def trumps(self, other):
+        sort_by_rank = sorted(self.cards, reverse=True)
+        other_sort_by_rank = sorted(other.cards, reverse=True)
+        for i, card in enumerate(sort_by_rank):
+            if card < other_sort_by_rank[i]:
+                return False
+            elif card == other_sort_by_rank[i]:
+                continue
+            else:
+                return True
+        raise NotImplementedError  
     
 
 class FullHouse(WinPattern):
