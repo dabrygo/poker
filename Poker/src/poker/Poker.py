@@ -73,7 +73,10 @@ class Game:
         return not self.player_one_wins()
 
       
-# if __name__ == "__main__":
+if __name__ == "__main__":
+    import unittest
+    test_suite = unittest.TestLoader().discover("tests", top_level_dir="../..")
+    unittest.TextTestRunner().run(test_suite)
 #     with open("../../TestResources/hands.txt", 'r') as f:
 #         for i in range(5):
 #             cards = f.readline().split()
