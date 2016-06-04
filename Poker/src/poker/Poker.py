@@ -24,7 +24,6 @@ class Card:
         
         
 class TestCard(unittest.TestCase):
-    
     def test_card(self):
         card = Card("AS")
         self.assertEqual("A", card.rank)
@@ -254,7 +253,7 @@ class TestFullHouse(unittest.TestCase):
 
 
 class FourOfAKind(WinPattern):
-    """A hand has three cards of the same rank."""
+    """A hand has four cards of the same rank."""
     def __init__(self, hand):
         super().__init__(hand)
     
@@ -364,7 +363,6 @@ class Hand:
     
 
 class TestHand(unittest.TestCase):
-    
     def test_sort_hand(self):
         hand = Hand(["5H", "5C", "6S", "7S", "KD"])
         hand.sort_hand()
@@ -441,7 +439,6 @@ class Game:
     
 
 class TestGame(unittest.TestCase):
-    
     def test_pair_eight_beats_pair_five(self):
         eights = Hand(["8S", "8D"])
         fives = Hand(["5H", "5C"])
@@ -491,8 +488,7 @@ class TestGame(unittest.TestCase):
         self.assertTrue(game.player_one_wins)
                       
 
-class TestTie(unittest.TestCase):
-    
+class TestTie(unittest.TestCase):   
     def test_one_player_has_smaller_straight_flush(self):
         hand_1 = Hand(["2H", "3H", "4H", "5H", "6H"])
         hand_2 = Hand(["3S", "4S", "5S", "6S", "7S"])
