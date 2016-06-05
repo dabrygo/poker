@@ -6,7 +6,7 @@ Created on Jun 3, 2016
 
 import unittest
 
-from poker.Poker import Card, Hand, Game
+from poker.Poker import Card, Hand, OneDeckGame
 from poker import WinPatterns
 from poker.WinPatterns import *
 
@@ -90,7 +90,7 @@ class TestGame(unittest.TestCase):
         hand_1 = Hand(["2S", "2H", "3S", "3H"])
         hand_2 = Hand(["KS", "KH", "6S", "5H"])
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_one_wins())
                       
@@ -102,7 +102,7 @@ class TestTie(unittest.TestCase):
         hand_1 = Hand(["5D", "8C", "9S", "JS", "AC"])
         hand_2 = Hand(["2C", "5C", "7D", "8S", "QH"])
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_one_wins())
         
@@ -110,7 +110,7 @@ class TestTie(unittest.TestCase):
         pair_8 = Hand(["2C", "3S", "8S", "8D", "TD"])
         pair_5 = Hand(["5H", "5C", "6S", "7S", "KD"])
         
-        game = Game(pair_8, pair_5)
+        game = OneDeckGame(pair_8, pair_5)
         
         self.assertTrue(game.player_one_wins())
         
@@ -118,7 +118,7 @@ class TestTie(unittest.TestCase):
         pairs_6_and_8 = Hand(["3S", "6H", "6D", "8C", "8D"])
         pairs_6_and_7 = Hand(["3H", "6S", "6C", "7C", "7D"])
         
-        game = Game(pairs_6_and_8, pairs_6_and_7)
+        game = OneDeckGame(pairs_6_and_8, pairs_6_and_7)
         
         self.assertTrue(game.player_one_wins())
         
@@ -126,14 +126,14 @@ class TestTie(unittest.TestCase):
         pairs_5_and_8 = Hand(["3H", "5S", "5C", "8S", "8H"])
         pairs_6_and_8 = Hand(["3S", "6H", "6H", "8C", "8D"])
         
-        game = Game(pairs_6_and_8, pairs_5_and_8)
+        game = OneDeckGame(pairs_6_and_8, pairs_5_and_8)
         
         self.assertTrue(game.player_one_wins())
     def test_player_wins_with_higher_three_of_a_kind(self):
         triple_8 = Hand(["3H", "5S", "8C", "8S", "8H"])
         triple_7 = Hand(["3S", "5H", "7H", "7C", "7D"])
         
-        game = Game(triple_8, triple_7)
+        game = OneDeckGame(triple_8, triple_7)
         
         self.assertTrue(game.player_one_wins())
         
@@ -142,7 +142,7 @@ class TestTie(unittest.TestCase):
         triple_8 = Hand(["3H", "7H", "7S", "7D", "KD"])
         triple_7 = Hand(["3S", "7H", "7C", "7D", "AD"])
         
-        game = Game(triple_8, triple_7)
+        game = OneDeckGame(triple_8, triple_7)
         
         self.assertTrue(game.player_one_wins())
         
@@ -150,7 +150,7 @@ class TestTie(unittest.TestCase):
         straight_2_6 = Hand(["2S", "3C", "4D", "5H", "6S"])
         straight_3_7 = Hand(["3S", "4C", "5D", "6H", "7S"])
         
-        game = Game(straight_3_7, straight_2_6)
+        game = OneDeckGame(straight_3_7, straight_2_6)
         
         self.assertTrue(game.player_one_wins())
 
@@ -158,7 +158,7 @@ class TestTie(unittest.TestCase):
         high_flush = Hand(["AS", "KS", "QS", "JS", "9S"])
         low_flush = Hand(["8S", "7S", "6S", "5S", "3S"])
         
-        game = Game(high_flush, low_flush)
+        game = OneDeckGame(high_flush, low_flush)
         
         self.assertTrue(game.player_one_wins())
         
@@ -166,7 +166,7 @@ class TestTie(unittest.TestCase):
         high_flush = Hand(["AS", "KS", "QS", "JS", "9S"])
         low_flush = Hand(["KH", "QH", "JH", "TH", "8H"])
         
-        game = Game(high_flush, low_flush)
+        game = OneDeckGame(high_flush, low_flush)
 
         self.assertTrue(game.player_one_wins())
 
@@ -174,7 +174,7 @@ class TestTie(unittest.TestCase):
         triple_4 = Hand(["2H", "2D", "4C", "4D", "4S"])
         triple_3 = Hand(["3C", "3D", "3S", "9S", "9D"])
          
-        game = Game(triple_4, triple_3)
+        game = OneDeckGame(triple_4, triple_3)
          
         self.assertTrue(game.player_one_wins())
     
@@ -183,7 +183,7 @@ class TestTie(unittest.TestCase):
         hand_1 = Hand(["4C", "4D", "4S", "2H", "2D"])
         hand_2 = Hand(["4C", "4D", "4S", "9S", "9D"])
          
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
          
         self.assertTrue(game.player_two_wins())
         
@@ -191,7 +191,7 @@ class TestTie(unittest.TestCase):
         hand_1 = Hand(["KH", "KS", "KC", "KD", "2H"])
         hand_2 = Hand(["5H", "5S", "5C", "5D", "QH"])
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_one_wins())
         
@@ -199,7 +199,7 @@ class TestTie(unittest.TestCase):
         hand_1 = Hand(["3S", "4S", "5S", "6S", "7S"])
         hand_2 = Hand(["2H", "3H", "4H", "5H", "6H"])
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_one_wins())
     
@@ -215,7 +215,7 @@ class TestDraw(unittest.TestCase):
         hand_1 = Hand(["4C", "4D", "4S", "2H", "2D"])
         hand_2 = Hand(["4C", "4D", "4S", "2S", "2C"])
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         print(game)
     
@@ -230,7 +230,7 @@ class TestLowCardWins(unittest.TestCase):
         hand_1 = Hand(["2S", "5H", "6D", "7C", "8C"])
         hand_2 = Hand(["3H", "5S", "6C", "7D", "8D"])
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_two_wins())
         
@@ -238,7 +238,7 @@ class TestLowCardWins(unittest.TestCase):
         hand_1 = Hand(["2S", "5H", "6D", "7C", "7S"])
         hand_2 = Hand(["3H", "5S", "6C", "7D", "7H"])
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_two_wins())
         
@@ -246,7 +246,7 @@ class TestLowCardWins(unittest.TestCase):
         hand_1 = Hand(["2S", "6H", "6D", "7C", "7S"])
         hand_2 = Hand(["3H", "6S", "6C", "7D", "7H"])
                 
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_two_wins())
     
@@ -255,7 +255,7 @@ class TestLowCardWins(unittest.TestCase):
         hand_1 = Hand(["2S", "5H", "7H", "7C", "7D"])
         hand_2 = Hand(["3H", "5S", "7H", "7C", "7D"])        
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_two_wins())
         
@@ -263,7 +263,7 @@ class TestLowCardWins(unittest.TestCase):
         high_flush = Hand(["AS", "KS", "QS", "JS", "9S"])
         low_flush = Hand(["AH", "KH", "QH", "JH", "8H"])
         
-        game = Game(high_flush, low_flush)
+        game = OneDeckGame(high_flush, low_flush)
 
         self.assertTrue(game.player_one_wins())
     
@@ -272,7 +272,7 @@ class TestLowCardWins(unittest.TestCase):
         hand_1 = Hand(["KH", "KS", "KC", "KD", "QH"])
         hand_2 = Hand(["KH", "KS", "KC", "KD", "2H"])
         
-        game = Game(hand_1, hand_2)
+        game = OneDeckGame(hand_1, hand_2)
         
         self.assertTrue(game.player_one_wins())
         

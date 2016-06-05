@@ -45,7 +45,7 @@ class Hand:
         return ' '.join(str(card) for card in self.cards)
     
 
-class Game:
+class OneDeckGame:
     """A set of two hands, one of which is a winner."""
     def __init__(self, hand_1, hand_2):
         hand_1.sort_hand()
@@ -81,6 +81,6 @@ if __name__ == "__main__":
 #             hand_2 = Hand(cards[5:])
 #             print(hand_1)
 #             print(hand_2)
-#             game = Game(hand_1, hand_2)
+#             game = OneDeckGame(hand_1, hand_2)
 #         
 #             print(game.player_one_wins())
