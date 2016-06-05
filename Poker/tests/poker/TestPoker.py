@@ -82,18 +82,7 @@ class TestHand(unittest.TestCase):
         
     def test_high_card(self):
         hand = Hand(["6C", "KD", "9H", "7S", "3D"])
-        self.assertEqual(WinPatterns.order.index(HighCard), hand.score())
-
-
-class TestGame(unittest.TestCase):            
-    def test_two_pair_beats_higher_pair(self):
-        hand_1 = Hand(["2S", "2H", "3S", "3H"])
-        hand_2 = Hand(["KS", "KH", "6S", "5H"])
-        
-        game = OneDeckGame(hand_1, hand_2)
-        
-        self.assertTrue(game.player_one_wins())
-                      
+        self.assertEqual(WinPatterns.order.index(HighCard), hand.score())                      
 
 # TODO: More "tied" tests
 class TestTie(unittest.TestCase):
