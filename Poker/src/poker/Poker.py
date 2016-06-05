@@ -5,7 +5,7 @@ Created on Jun 2, 2016
 '''
 
 
-class OneDeckGame:
+class OneDeckTwoPlayerGame:
     """A set of two hands, one of which is a winner."""
     def __init__(self, hand_1, hand_2):
         self.hand_1 = hand_1
@@ -37,6 +37,6 @@ if __name__ == "__main__":
 #             hand_2 = Hand(cards[5:])
 #             print(hand_1)
 #             print(hand_2)
-#             game = OneDeckGame(hand_1, hand_2)
+#             game = OneDeckTwoPlayerGame(hand_1, hand_2)
 #         
 #             print(game.player_one_wins())
