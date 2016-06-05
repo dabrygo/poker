@@ -63,16 +63,14 @@ class Pair(WinPattern):
         return len(set([card.rank for card in self.cards if self.has_n(card, 2)])) == 1 
     
     def values(self):
-        return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
+        for card in self.cards:
+            if self.has_n(card, 2):
+                return card
     
-    def trumps(self, other):
-        pair_rank = self.values()[0]
-        other_pair_rank = other.values()[0]
-        if ranks.index(pair_rank) > ranks.index(other_pair_rank):
-            return True
-        if ranks.index(pair_rank) < ranks.index(other_pair_rank):
-            return False
-        return HighCard.trumps(self, other)
+    def trumps(self, that):
+        if self.values() != that.values():
+            return that.values() < self.values()
+        return HighCard.trumps(self, that)
 
 
 class TwoPair(WinPattern):
@@ -87,7 +85,6 @@ class TwoPair(WinPattern):
         return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 2)])))
     
     def trumps(self, other):
-        # compare pairs
         pair_ranks = self.values()
         other_pair_ranks = other.values()
         for i, rank in enumerate(pair_ranks):
@@ -97,9 +94,6 @@ class TwoPair(WinPattern):
                 return True
             if ranks.index(rank) < ranks.index(other_pair_ranks[i]):
                 return False
-        # compare all cards (the pairs have already been
-        # compared, so comparing again shouldn't hurt 
-        # anything)
         return HighCard.trumps(self, other)
     
         
@@ -112,27 +106,18 @@ class ThreeOfAKind(WinPattern):
         return any([self.has_n(card, 3) for card in self.cards])
     
     def values(self):
-        return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 3)])))
+        for card in self.cards:
+            if self.has_n(card, 3):
+                return card
 
-    def trumps(self, other):
-        # compare pairs
-        triplet_ranks = self.values()
-        other_triplet_ranks = other.values()
-        for i, rank in enumerate(triplet_ranks):
-            if ranks.index(rank) == ranks.index(other_triplet_ranks[i]):
-                continue
-            if ranks.index(rank) > ranks.index(other_triplet_ranks[i]):
-                return True
-            if ranks.index(rank) < ranks.index(other_triplet_ranks[i]):
-                return False
-        # compare all cards (the pairs have already been
-        # compared, so comparing again shouldn't hurt 
-        # anything)
-        return HighCard.trumps(self, other) 
+    def trumps(self, that):
+        if self.values() != that.values():
+            return that.values() < self.values()
+        return HighCard.trumps(self, that) 
 
 
 class Straight(WinPattern):
-    """A hand has five cards whose ranks are consecutive."""
+    """A hand has five cards with consecutive ranks."""
     # TODO Move ranks to someplace accessible to poker.Poker.Card
     #      and here
     def __init__(self, hand):
@@ -169,18 +154,13 @@ class FullHouse(WinPattern):
         
     def criterion(self):
         return Pair(self).criterion() and ThreeOfAKind(self).criterion()
-
-    def values(self):
-        pass
     
-    def trumps(self, other):
-        triplet = ThreeOfAKind(self).values()[0]
-        other_triplet = ThreeOfAKind(other).values()[0]
+    def trumps(self, that):
+        this_triplet_card = ThreeOfAKind(self).values()
+        that_triplet_card = ThreeOfAKind(that).values()
 
-        if ranks.index(triplet) < ranks.index(other_triplet):
-            return False
-        elif ranks.index(triplet) > ranks.index(other_triplet):
-            return True
+        if this_triplet_card != that_triplet_card:
+            return this_triplet_card > that_triplet_card
         else:
             pair = Pair(self).values()[0]
             other_pair = Pair(self).values()[0]
@@ -189,8 +169,7 @@ class FullHouse(WinPattern):
             elif ranks.index(pair) > ranks.index(other_pair):
                 return True
             else:
-                # Draw
-                raise NotImplementedError
+                raise NotImplementedError # Draw
 
 
 class FourOfAKind(WinPattern):
@@ -202,11 +181,11 @@ class FourOfAKind(WinPattern):
         return any([self.has_n(card, 4) for card in self.cards])
     
     def values(self):
-        return sorted(list(set([card.rank for card in self.cards if self.has_n(card, 4)])))
+        return sorted(set([card.rank for card in self.cards if self.has_n(card, 4)]))
     
     def trumps(self, other):
         quartet = self.values()[0]
-        other_quartet = self.values()[0]
+        other_quartet = other.values()[0]
         if ranks.index(quartet) < ranks.index(other_quartet):
             return False
         elif ranks.index(quartet) > ranks.index(other_quartet):
@@ -222,9 +201,6 @@ class StraightFlush(WinPattern):
     def criterion(self):
         return Straight(self).criterion() and Flush(self).criterion()
     
-    def values(self):
-        return sorted([card.rank for card in self.cards])
-    
     def trumps(self, other):
         return Straight(self).trumps(other)
     
@@ -236,9 +212,6 @@ class RoyalFlush(WinPattern):
     
     def criterion(self):
         return StraightFlush(self).criterion() and HighCard(self).values()[0] == "A" 
-    
-    def values(self):
-        return Straight(self).values()
         
     def trumps(self, other):
         raise NotImplementedError # Draw

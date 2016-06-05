@@ -36,7 +36,7 @@ class TestPair(unittest.TestCase):
         
     def test_know_rank_of_pair(self):
         hand = Hand(["7S", "2H", "3D", "7C", "KD"])
-        self.assertEqual(["7"], Pair(hand).values())
+        self.assertEqual("7", Pair(hand).values().rank)
 
 
 class TestTwoPair(unittest.TestCase):    
@@ -68,7 +68,7 @@ class TestThreeOfAKind(unittest.TestCase):
         
     def test_know_rank_of_three_of_a_kind(self):
         hand = Hand(["7S", "7H", "3D", "7C", "KD"])
-        self.assertEqual(["7"], ThreeOfAKind(hand).values())
+        self.assertEqual("7", ThreeOfAKind(hand).values().rank)
         
 
 class TestStraight(unittest.TestCase):
@@ -142,10 +142,6 @@ class TestStraightFlush(unittest.TestCase):
     def test_flush_is_not_always_straight_flush(self):
         hand = Hand(["2S", "3S", "4S", "5S", "7S"])
         self.assertFalse(StraightFlush(hand).criterion())
-        
-    def test_straight_flush_values(self):
-        hand = Hand(["7H", "5H", "8H", "4H", "6H"])
-        self.assertEqual(["4", "5", "6", "7", "8"], StraightFlush(hand).values())
   
      
 class TestRoyalFlush(unittest.TestCase):
