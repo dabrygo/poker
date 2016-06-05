@@ -127,7 +127,7 @@ class TestFourOfAKind(unittest.TestCase):
          
     def test_know_rank_of_four_of_a_kind(self):
         hand = Hand(["7S", "7H", "3D", "7C", "7D"])
-        self.assertEqual(["7"], FourOfAKind(hand).values())
+        self.assertEqual("7", FourOfAKind(hand).values().rank)
  
 
 class TestStraightFlush(unittest.TestCase):

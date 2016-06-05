@@ -178,15 +178,13 @@ class FourOfAKind(WinPattern):
         return any([self.has_n(card, 4) for card in self.cards])
     
     def values(self):
-        return sorted(set([card.rank for card in self.cards if self.has_n(card, 4)]))
+        for card in self.cards:
+            if self.has_n(card, 4):
+                return card
     
     def trumps(self, other):
-        quartet = self.values()[0]
-        other_quartet = other.values()[0]
-        if ranks.index(quartet) < ranks.index(other_quartet):
-            return False
-        elif ranks.index(quartet) > ranks.index(other_quartet):
-            return True
+        if self.values() != other.values():
+            return other.values() < self.values()
         return HighCard.trumps(self, other) 
 
 
