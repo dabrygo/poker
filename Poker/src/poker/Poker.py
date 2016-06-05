@@ -28,6 +28,7 @@ class Hand:
     """An unordered collection of cards."""   
     def __init__(self, card_strings):
         self.cards = [Card(card) for card in card_strings]
+        self.sort_hand()
     
     def sort_hand(self, highest_first=True):
         self.cards = sorted(self.cards, reverse=highest_first)

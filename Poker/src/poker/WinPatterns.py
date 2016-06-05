@@ -39,15 +39,12 @@ class HighCard(WinPattern):
         return True
     
     def values(self):
-        sort_by_rank = sorted(self.cards, reverse=True)
-        return sort_by_rank[0]
+        return self.cards[0]
     
     def trumps(self, other):
-        this_hand_sorted = sorted(self.cards, reverse=True)
-        that_hand_sorted = sorted(other.cards, reverse=True)
-        for i, card in enumerate(this_hand_sorted):
-            if card != that_hand_sorted[i]:
-                return that_hand_sorted[i] < card
+        for i, card in enumerate(self.cards):
+            if card != other.cards[i]:
+                return other.cards[i] < card
         raise NotImplementedError # Draw
    
           
@@ -85,12 +82,8 @@ class TwoPair(WinPattern):
         pair_ranks = self.values()
         other_pair_ranks = other.values()
         for i, rank in enumerate(pair_ranks):
-            if ranks.index(rank) == ranks.index(other_pair_ranks[i]):
-                continue
-            if ranks.index(rank) > ranks.index(other_pair_ranks[i]):
-                return True
-            if ranks.index(rank) < ranks.index(other_pair_ranks[i]):
-                return False
+            if ranks.index(rank) != ranks.index(other_pair_ranks[i]):
+                return ranks.index(other_pair_ranks[i]) < ranks.index(rank) 
         return HighCard.trumps(self, other)
     
         
@@ -115,16 +108,13 @@ class ThreeOfAKind(WinPattern):
 
 class Straight(WinPattern):
     """A hand has five cards with consecutive ranks."""
-    # TODO Move ranks to someplace accessible to poker.Poker.Card
-    #      and here
     def __init__(self, hand):
         super().__init__(hand)
     
     def criterion(self):
-        self.cards = sorted(self.cards, reverse=False)
         start_index = ranks.index(self.cards[0].rank)
         for i in range(5):
-            if self.cards[i].rank != ranks[start_index + i]:
+            if self.cards[i].rank != ranks[start_index - i]:
                 return False
         return True
     
@@ -145,7 +135,7 @@ class Flush(WinPattern):
     
 
 class FullHouse(WinPattern):
-    """A hand has a pair of one rank and a three of a kind of another."""
+    """A hand has a pair and a three-of-a-kind of different ranks."""
     def __init__(self, hand):
         super().__init__(hand)
         
