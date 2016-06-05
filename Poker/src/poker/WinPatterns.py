@@ -168,7 +168,7 @@ class FourOfAKind(WinPattern):
         for card in self.cards:
             if self.has_n(card, 4):
                 return card
-    
+
     def trumps(self, other):
         if self.values() != other.values():
             return other.values() < self.values()
