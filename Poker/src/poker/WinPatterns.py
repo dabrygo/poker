@@ -159,14 +159,11 @@ class FullHouse(WinPattern):
         if this_triplet_card != that_triplet_card:
             return that_triplet_card < this_triplet_card 
         else:
-            pair = Pair(self).values()[0]
-            other_pair = Pair(self).values()[0]
-            if ranks.index(pair) < ranks.index(other_pair):
-                return False
-            elif ranks.index(pair) > ranks.index(other_pair):
-                return True
-            else:
-                raise NotImplementedError # Draw
+            pair = Pair(self).values()
+            other_pair = Pair(self).values()
+            if pair != other_pair:
+                return other_pair < pair
+            raise NotImplementedError # Draw
 
 
 class FourOfAKind(WinPattern):
