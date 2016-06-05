@@ -29,15 +29,20 @@ class OneDeckTwoPlayerGame:
 if __name__ == "__main__":
     import unittest
     import sys
+    from poker.Deck import Hand
     test_suite = unittest.TestLoader().discover("tests", top_level_dir="../..")
     unittest.TextTestRunner(stream=sys.stdout).run(test_suite)
-#     with open("../../TestResources/hands.txt", 'r') as f:
-#         for i in range(5):
-#             cards = f.readline().split()
-#             hand_1 = Hand(cards[:5])
-#             hand_2 = Hand(cards[5:])
-#             print(hand_1)
-#             print(hand_2)
-#             game = OneDeckTwoPlayerGame(hand_1, hand_2)
-#         
-#             print(game.player_one_wins())
+    with open("../../TestResources/10_hands.txt", 'r') as f:
+        for i in range(10):
+            cards = f.readline().split()
+            hand_1 = Hand(cards[:5])
+            hand_2 = Hand(cards[5:])
+            game = OneDeckTwoPlayerGame(hand_1, hand_2)
+         
+            print("Game " + str(i+1))
+            
+            print(" 1. " + str(hand_1))
+            print(" 2. " + str(hand_2))
+            print(" Player 1 " + ("wins" if game.player_one_wins() else "loses"))
+            print()
+            

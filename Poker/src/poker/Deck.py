@@ -41,7 +41,8 @@ class Hand:
         return self.win_pattern().trumps(other.win_pattern())
     
     def __str__(self):
-        return ' '.join(str(card) for card in self.cards)
+        hand = ' '.join(str(card) for card in self.cards)
+        return "{}: {}".format(hand, self.win_pattern()) 
     
 
 if __name__ == "__main__":

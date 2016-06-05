@@ -29,6 +29,9 @@ class WinPattern:
     def trumps(self, other):
         raise NotImplementedError
     
+    def __str__(self):
+        return "{} ({})".format(type(self).__name__, self.values())
+    
 
 class HighCard(WinPattern):
     """The highest-ranking card in a hand."""
@@ -65,6 +68,9 @@ class Pair(WinPattern):
         if self.values() != that.values():
             return that.values() < self.values()
         return HighCard.trumps(self, that)
+    
+    def __str__(self):
+        return "{} ({})".format(type(self).__name__, self.values().rank)
 
 
 class TwoPair(WinPattern):
@@ -86,6 +92,9 @@ class TwoPair(WinPattern):
                 return Deck.Card.ranks.index(other_pair_ranks[i]) < Deck.Card.ranks.index(rank) 
         return HighCard.trumps(self, other)
     
+    def __str__(self):
+        return "{} ({})".format(type(self).__name__, ','.join(self.values()))
+    
         
 class ThreeOfAKind(WinPattern):
     """A hand has three cards of the same rank."""
@@ -103,13 +112,19 @@ class ThreeOfAKind(WinPattern):
     def trumps(self, that):
         if self.values() != that.values():
             return that.values() < self.values()
-        return HighCard.trumps(self, that) 
+        return HighCard.trumps(self, that)
+    
+    def __str__(self):
+        return "{} ({})".format(type(self).__name__, self.values().rank) 
 
 
 class Straight(WinPattern):
     """A hand has five cards with consecutive ranks."""
     def __init__(self, hand):
         super().__init__(hand)
+        
+    def values(self): 
+        return [min(self.cards).rank, max(self.cards).rank]
     
     def criterion(self):
         start_index = Deck.Card.ranks.index(self.cards[0].rank)
@@ -120,13 +135,19 @@ class Straight(WinPattern):
     
     def trumps(self, other):
         return HighCard.trumps(self, other)
+    
+    def __str__(self):
+        return "{} ({})".format(type(self).__name__, '-'.join(self.values()))
       
 
 class Flush(WinPattern):
     """A hand has cards of only one suit."""
     def __init__(self, hand):
         super().__init__(hand)
-        
+    
+    def values(self):
+        return ''.join(set(self.suits))
+    
     def criterion(self):
         return len(set(self.suits)) == 1
     
@@ -138,6 +159,9 @@ class FullHouse(WinPattern):
     """A hand has a pair and a three-of-a-kind of different ranks."""
     def __init__(self, hand):
         super().__init__(hand)
+        
+    def values(self):
+        return [ThreeOfAKind(self).values().rank, Pair(self).values().rank]
         
     def criterion(self):
         return Pair(self).criterion() and ThreeOfAKind(self).criterion()
@@ -154,6 +178,9 @@ class FullHouse(WinPattern):
             if pair != other_pair:
                 return other_pair < pair
             raise NotImplementedError # Draw
+    
+    def __str__(self):
+        return "{} ({})".format(type(self).__name__, ','.join(self.values()))
 
 
 class FourOfAKind(WinPattern):
@@ -174,17 +201,29 @@ class FourOfAKind(WinPattern):
             return other.values() < self.values()
         return HighCard.trumps(self, other) 
 
+    def __str__(self):
+        return "{} ({})".format(type(self).__name__, self.values().rank) 
+
 
 class StraightFlush(WinPattern):
     """A hand has consecutive cards of the same suit."""
     def __init__(self, hand):
         super().__init__(hand)
-        
+    
+    def values(self):
+        return Straight(self).values()
+    
     def criterion(self):
         return Straight(self).criterion() and Flush(self).criterion()
     
     def trumps(self, other):
         return Straight(self).trumps(other)
+    
+    def __str__(self):
+        pattern = type(self).__name__
+        span = '-'.join(self.values())
+        suit = Flush(self).values()
+        return "{} ({}{})".format(pattern, span, suit)
     
 
 class RoyalFlush(WinPattern):
@@ -197,6 +236,9 @@ class RoyalFlush(WinPattern):
         
     def trumps(self, other):
         raise NotImplementedError # Draw
+    
+    def __str__(self):
+        return "{} ({})".format(type(self).__name__, Flush(self).values()) 
 
 
 order = [RoyalFlush, StraightFlush, FourOfAKind, FullHouse, Flush,
