@@ -9,7 +9,7 @@ import unittest
 from poker.Poker import OneDeckGame
 from poker.Deck import Hand
 
-# TODO: More "tied" tests
+
 class TestTie(unittest.TestCase):
     """Players meet the same win condition, but it's not a draw."""   
     def test_player_wins_with_high_card(self):

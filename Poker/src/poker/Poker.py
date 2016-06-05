@@ -21,7 +21,7 @@ class OneDeckGame:
         if self.player_one_has_a_better_win_pattern():
             return True
         elif self.break_tie():
-            return self.hand_1.win_pattern().trumps(self.hand_2.win_pattern())
+            return self.hand_1.beats(self.hand_2)
         return False
 
     def player_two_wins(self):
