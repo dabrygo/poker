@@ -11,11 +11,11 @@ from poker.WinPatterns import HighCard, Pair, TwoPair, ThreeOfAKind, Straight, F
 class TestHighCard(unittest.TestCase):
     def test_low_high_card(self):
         bad_hand = Hand(["7D", "2H", "3D", "5C", "4S"])
-        self.assertEqual("7", HighCard(bad_hand).values()[0])
+        self.assertEqual("7", HighCard(bad_hand).values().rank)
     
     def test_ace_high(self):
         good_hand = Hand(["AD", "KD", "QD", "JD", "TD"])
-        self.assertEqual("A", HighCard(good_hand).values()[0])
+        self.assertEqual("A", HighCard(good_hand).values().rank)
         
     def test_ace_trumps_king(self):
         ace = HighCard(Hand(["AD"]))

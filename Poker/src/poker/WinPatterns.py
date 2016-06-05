@@ -1,7 +1,7 @@
 '''
 Created on Jun 3, 2016
 
-@author: dbgod
+@author: Daniel
 '''
 
 ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
@@ -11,6 +11,7 @@ class WinPattern:
     def __init__(self, hand):
         self.cards = hand.cards
         self.ranks = [card.rank for card in self.cards]
+        self.suits = [card.suit for card in self.cards]
     
     def criterion(self):
         """Return true if hand matches this pattern."""
@@ -39,18 +40,14 @@ class HighCard(WinPattern):
     
     def values(self):
         sort_by_rank = sorted(self.cards, reverse=True)
-        return sort_by_rank[0].rank
+        return sort_by_rank[0]
     
     def trumps(self, other):
-        sort_by_rank = sorted(self.cards, reverse=True)
-        other_sort_by_rank = sorted(other.cards, reverse=True)
-        for i, card in enumerate(sort_by_rank):
-            if card < other_sort_by_rank[i]:
-                return False
-            elif card == other_sort_by_rank[i]:
-                continue
-            else:
-                return True
+        this_hand_sorted = sorted(self.cards, reverse=True)
+        that_hand_sorted = sorted(other.cards, reverse=True)
+        for i, card in enumerate(this_hand_sorted):
+            if card != that_hand_sorted[i]:
+                return that_hand_sorted[i] < card
         raise NotImplementedError # Draw
    
           
@@ -141,7 +138,7 @@ class Flush(WinPattern):
         super().__init__(hand)
         
     def criterion(self):
-        return len(set([card.suit for card in self.cards])) == 1
+        return len(set(self.suits)) == 1
     
     def trumps(self, other):
         return HighCard.trumps(self, other)
@@ -160,7 +157,7 @@ class FullHouse(WinPattern):
         that_triplet_card = ThreeOfAKind(that).values()
 
         if this_triplet_card != that_triplet_card:
-            return this_triplet_card > that_triplet_card
+            return that_triplet_card < this_triplet_card 
         else:
             pair = Pair(self).values()[0]
             other_pair = Pair(self).values()[0]
@@ -211,7 +208,7 @@ class RoyalFlush(WinPattern):
         super().__init__(hand)
     
     def criterion(self):
-        return StraightFlush(self).criterion() and HighCard(self).values()[0] == "A" 
+        return StraightFlush(self).criterion() and HighCard(self).values().rank == "A" 
         
     def trumps(self, other):
         raise NotImplementedError # Draw
