@@ -77,15 +77,12 @@ class TestStraight(unittest.TestCase):
         self.assertTrue(Straight(small_straight).criterion())
     
     def test_is_not_straight(self):
-        straight = Hand(["8S", "3D", "4C", "5H", "6C"])
-        self.assertFalse(Straight(straight).criterion())
+        not_straight = Hand(["8S", "3D", "4C", "5H", "6C"])
+        self.assertFalse(Straight(not_straight).criterion())
         
     def test_big_straight(self):
         big_straight = Hand(["AS", "KD", "QH", "JS", "TC"])
         self.assertTrue(Straight(big_straight).criterion())
-        
-    def test_values(self):
-        pass
     
 
 class TestFlush(unittest.TestCase):

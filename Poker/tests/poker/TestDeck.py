@@ -7,7 +7,7 @@ import unittest
 
 from poker.Deck import Card, Hand
 from poker import WinPatterns
-from poker.WinPatterns import *
+from poker.WinPatterns import HighCard, Pair, TwoPair, ThreeOfAKind, Straight, Flush, FullHouse, FourOfAKind, StraightFlush, RoyalFlush
 
 class TestCard(unittest.TestCase):
     def test_card(self):
