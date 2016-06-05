@@ -36,8 +36,7 @@ class TestCard(unittest.TestCase):
         self.assertLess(nine, ten)
 
         
-class TestHand(unittest.TestCase):    
-    # TODO No Magic numbers when it comes to testing score
+class TestHand(unittest.TestCase):
     def test_royal_flush(self):
         hand = Hand(["JH", "KH", "TH", "AH", "QH"])
         self.assertEqual(WinPatterns.order.index(RoyalFlush), hand.score())
