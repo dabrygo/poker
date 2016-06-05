@@ -5,7 +5,7 @@ Created on Jun 3, 2016
 '''
 import unittest
 
-from poker.Poker import Hand, Card 
+from poker.Deck import Hand, Card 
 from poker.WinPatterns import HighCard, Pair, TwoPair, ThreeOfAKind, Straight, Flush, FullHouse, FourOfAKind, StraightFlush, RoyalFlush
 
 class TestHighCard(unittest.TestCase):

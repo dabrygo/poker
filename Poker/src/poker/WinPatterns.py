@@ -4,7 +4,7 @@ Created on Jun 3, 2016
 @author: Daniel
 '''
 
-ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+from poker import Deck
 
 class WinPattern:
     """"""
@@ -82,8 +82,8 @@ class TwoPair(WinPattern):
         pair_ranks = self.values()
         other_pair_ranks = other.values()
         for i, rank in enumerate(pair_ranks):
-            if ranks.index(rank) != ranks.index(other_pair_ranks[i]):
-                return ranks.index(other_pair_ranks[i]) < ranks.index(rank) 
+            if Deck.Card.ranks.index(rank) != Deck.Card.ranks.index(other_pair_ranks[i]):
+                return Deck.Card.ranks.index(other_pair_ranks[i]) < Deck.Card.ranks.index(rank) 
         return HighCard.trumps(self, other)
     
         
@@ -112,9 +112,9 @@ class Straight(WinPattern):
         super().__init__(hand)
     
     def criterion(self):
-        start_index = ranks.index(self.cards[0].rank)
+        start_index = Deck.Card.ranks.index(self.cards[0].rank)
         for i in range(5):
-            if self.cards[i].rank != ranks[start_index - i]:
+            if self.cards[i].rank != Deck.Card.ranks[start_index - i]:
                 return False
         return True
     

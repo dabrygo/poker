@@ -4,53 +4,11 @@ Created on Jun 2, 2016
 @author: Daniel
 '''
 
-from poker import WinPatterns
-
-class Card:
-    """A playing card that has rank and suit."""
-    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', 
-             'T', 'J', 'Q', 'K', 'A']
-    def __init__(self, string):
-        self.rank = string[0]
-        self.suit = string[1]
-    
-    def __lt__(self, other):
-        return Card.ranks.index(self.rank) < Card.ranks.index(other.rank)
-    
-    def __eq__(self, other):
-        return self.rank == other.rank
-    
-    def __str__(self):
-        return self.rank + self.suit
-        
-
-class Hand:
-    """An unordered collection of cards."""   
-    def __init__(self, card_strings):
-        self.cards = [Card(card) for card in card_strings]
-        self.sort_hand()
-    
-    def sort_hand(self, highest_first=True):
-        self.cards = sorted(self.cards, reverse=highest_first)
-      
-    def win_pattern(self):
-        for pattern in WinPatterns.order:
-            if pattern(self).criterion():
-                return pattern(self)
-            
-    def score(self):
-        return WinPatterns.order.index(self.win_pattern().__class__)
-    
-    def __str__(self):
-        return ' '.join(str(card) for card in self.cards)
-    
 
 class OneDeckGame:
     """A set of two hands, one of which is a winner."""
     def __init__(self, hand_1, hand_2):
-        hand_1.sort_hand()
         self.hand_1 = hand_1
-        hand_2.sort_hand()
         self.hand_2 = hand_2
     
     def player_one_has_a_better_win_pattern(self):
