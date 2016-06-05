@@ -18,11 +18,9 @@ class OneDeckGame:
         return self.hand_1.score() == self.hand_2.score()
 
     def player_one_wins(self):
-        if self.player_one_has_a_better_win_pattern():
-            return True
-        elif self.break_tie():
+        if self.break_tie():
             return self.hand_1.beats(self.hand_2)
-        return False
+        return self.player_one_has_a_better_win_pattern()
 
     def player_two_wins(self):
         return not self.player_one_wins()
